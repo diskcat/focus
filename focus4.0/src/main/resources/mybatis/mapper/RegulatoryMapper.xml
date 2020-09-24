@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.RegulatoryMapper">
+    <insert id="add">
+        INSERT INTO regulatory(fileId,fileTitle,fileTheme,fileState,executionTime) VALUES(#{fileId},#{fileTitle},#{fileTheme},#{fileState},#{executionTime});
+    </insert>
+    <update id="update">
+        update regulatory set fileId=#{fileId},fileTitle=#{fileTitle},
+			fileTheme=#{fileTheme},fileState=#{fileState},executionTime=#{executionTime} where fileId=#{fileId};
+    </update>
+    <delete id="deleteById">
+        delete from regulatory where fileId=#{fileId};
+    </delete>
+
+
+    <select id="findByPage" resultType="com.xzjy.pojo.Regulatory">
+        select * from Regulatory
+            <where>
+                <if test="fileTheme!=null">
+                    and fileTheme like "%"#{fileTheme}"%"
+                </if>
+                <if test="fileState!=null">
+                    and fileState like "%"#{fileState}"%"
+                </if>
+            </where>
+        limit #{page} , #{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from Regulatory
+        <where>
+            <if test="fileTheme!=null">
+                and fileTheme like "%"#{fileTheme}"%"
+            </if>
+            <if test="fileState!=null">
+                and fileState like "%"#{fileState}"%"
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+<!DOCTYPE html >
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>香樟家园物业管理系统后台</title>
+<link rel="icon" href="../images/logo.ico" type="images/x-ico" />
+<link rel="stylesheet" type="text/css" href="../css/public.css" />
+<link rel="stylesheet" type="text/css" href="../css/Login.css" />
+</head>
+<body style="background-color: #ddddff">
+	<!-------------------login-------------------------->
+	<div class="login">
+		<form class="form"  action="../LoginBackController" method="post" style="margin-right:400px;">
+			<h1>
+				<a href="/index.html"><img src="../images/top.jpg"></a>香樟家园管理登陆
+			</h1>
+			<p>
+				用&nbsp;&nbsp;户&nbsp;&nbsp;名:&nbsp;&nbsp;<input class="shurukuang" th:value="${username}"
+					type="text" name="backId" placeholder="请输入用户名" required />
+			</p>
+			<p>
+				密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;<input th:value="${password}"
+					type="password" name="backPwd" placeholder="请输入密码" required />
+			</p>
+			<p>
+				<input type="submit" value="登  录" style="margin-top:20px;"/>
+			</p>
+			<p  th:text="${msg}" style="color:red;font-size:16px;">
+			</p>
+		</form>
+	</div>
+</body>
+</html>

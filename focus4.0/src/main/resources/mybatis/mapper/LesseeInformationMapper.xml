@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.LesseeInformationMapper">
+
+    <insert id="add">
+        insert into lesseeInformation(houseId,lesseeName,lesseeGender,lesseeIdcard,lesseeTelphone,startTime,endTime)
+        values(#{houseId},#{lesseeName},#{lesseeGender},#{lesseeIdcard},#{lesseeTelphone},#{startTime},#{endTime});
+    </insert>
+
+    <update id="update">
+        update lesseeInformation set houseId=#{houseId},lesseeName=#{lesseeName},lesseeGender=#{lesseeGender},lesseeIdcard=#{lesseeIdcard},
+        lesseeTelphone=#{lesseeTelphone},startTime=#{startTime},endTime=#{endTime} where leaseContractId=#{leaseContractId}
+    </update>
+
+    <delete id="delete">
+        delete from lesseeInformation where leaseContractId=#{leaseContractId};
+    </delete>
+
+    <select id="findAll" resultType="com.xzjy.pojo.LesseeInformation">
+        select * from lesseeInformation
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="lesseeName!=null">
+                and lesseeName like "%"#{lesseeName}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from lesseeInformation
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="lesseeName!=null">
+                and lesseeName like "%"#{lesseeName}"%"
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

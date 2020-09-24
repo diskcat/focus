@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>房屋基本信息表</title>
+	<!-- 导入easyui样式 -->
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" /> 
+	<!-- 导入easyui相关的js库文件(函数) -->
+	<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../easyui/datagrid-export.js"></script>
+	<!-- 自定义的样式 -->
+	<!-- 自定义的样式 -->
+	<style type="text/css">
+		#mytable{
+			width:100%;
+			border-collapse:collapse;
+		}
+		#mytable td{
+			font-size:12px;
+		}
+		.tdalign{
+			text-align: right;
+			width:40%;
+		}
+		#smartart,#print{
+			float:right;
+			margin:30px 5px;
+		}
+	</style>
+	<!-- 脚本代码 -->
+	<script type="text/javascript">
+		$(function(){
+			/* 对表格对象加载datagrid方法 */
+			$("#dg").datagrid({
+				idFiled:'houseId',//主键字段
+				toolbar:'#toolbar',//绑定工具栏
+				fit:true,//填充容器
+				url:"../HouseInformationController?method=findAll", //数据源路径
+				dataType:"json",
+				nowrap:true,
+				striped: true,//斑马线
+				fitColumns:true,//自动填充列
+				rownumbers:true,//增加一个行号列
+				loadMsg:'正在玩命加载，请稍候....',//在页面显示数据之前，显示的文本
+				//冻结列：让某些列永远显示在页面中
+				frozenColumns:[ [{
+					'field':'checkbox',//复选框列
+					'checkbox':true
+				}] ],
+				//设置datagrid数据表格对象中的数据列
+				columns:[ [{
+					field:'houseId',//字段名
+					title:'房号',//datagrid数据表格中显示的列的标题
+					align:'center',//数据显示的位置:居中
+					width:'13%' //数据列的宽度
+				},{
+					field:'ownerName',
+					title:'业主姓名',
+					align:'center',
+					width:'13%'
+				},{
+					field:'houseType',
+					title:'户型',
+					align:'center',
+					width:'13%'
+				},{
+					field:'houseArea',
+					title:'面积',
+					align:'center',
+					width:'13%'
+				},{
+					field:'houseNature',
+					title:'性质',
+					align:'center',
+					width:'13%'
+				},{
+					field:'houseState',
+					title:'状态',
+					align:'center',
+					width:'13%'
+				},{
+					field:'houseAddress',
+					title:'房屋地址',
+					align:'center',
+					width:'13%'
+				}] ],
+				//datagrid底部是否显示分页工具栏
+				pagination:true,
+				//底部分页工具栏中，页面记录数列表
+				pageList:[5,10,15,20],
+				//分页工具栏显示位置
+				pagePosition:'bottom',
+				//当前页面默认大小(每页显示多少行数据)
+				pageSize:5
+			});
+			//点击工具栏上"新增项目"按钮操作
+			$("#houseadd").click(function(){
+				$("#houseform").form("reset");
+				$("#ok").linkbutton({
+						text:"确定",
+						iconCls:"icon-add"
+					});
+				$("#housedialog").dialog({
+						title:"新增项目",
+						iconCls:"icon-add"
+					});
+				$("#housedialog").dialog("open");
+			});
+			
+			//新增/修改对话框中的"确定"按钮操作
+			$("#ok").click(function(){
+				//获得按钮上的文字，确定它是增加还是修改
+				var btnText=$(this).text();
+				//判断它是“确定”还是"修改"按钮
+				if(btnText.trim()=="确定"){ //新增
+					//判断用户输入的数据是否通过验证
+					if($("#houseform").form("validate")){
+						//使用ajax方式提交数据到控制层
+						$.ajax({
+							type:"post",
+							url:"../HouseInformationController",
+							async:true,
+							data:$("#houseform").serialize()+"&method=add",//表单数据序列化
+							dataType:"text",
+							success:function(message){
+								//判断服务器端返回的文本内容
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"房屋信息添加成功!"
+									});
+									//添加成功后，把添加界面数据清空
+									$("#houseform").form("reset");
+									//把对话框关闭
+									$("#housedialog").dialog("close");
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"房屋信息添加失败!"
+									});
+								}
+							}
+						});
+					}else{
+						//右下角显示一个信息提示
+						$.messager.show({
+							title:"提示",
+							msg:"数据验证没有通过，不能保存项目信息..."
+						});
+					}
+				}else{ //修改操作
+					//对数据进行修改
+					//判断表单数据是否通过验证
+					if($("#houseform").form("validate")){
+						//$.post(url,data,callback,type)
+						$.post("../HouseInformationController?method=update",
+						$("#houseform").serialize(),
+						function(message){
+							//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+							if(message=="success"){
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"房屋信息修改成功!"
+								});
+								//添加成功后，把修改界面数据清空
+								$("#houseform").form("reset");
+								//把对话框关闭
+								$("#housedialog").dialog("close");
+								//datagrid数据表格重新加载
+								$("#dg").datagrid("reload");
+							}else{
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"房屋信息修改失败!"
+								});
+							}
+						},
+						"text");
+					}
+				}
+			});
+			//点击工具栏上的修改项目
+			$("#houseupdate").click(function(){
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行数据进行修改...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#housedialog").dialog({
+						title:"修改项目",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#housedialog").dialog("open");
+					$("#houseId").attr("readOnly","readOnly");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#houseform").form("load",{
+						houseId:array[0].houseId,
+						ownerName:array[0].ownerName,
+						houseType:array[0].houseType,
+						houseArea:array[0].houseArea,
+						houseNature:array[0].houseNature,
+						houseState:array[0].houseState,
+						houseAddress:array[0].houseAddress
+					});
+					
+					//设置表单按钮上的文字
+					$("#ok").linkbutton({
+						text:"修改",
+						iconCls:"icon-edit"
+					});
+				}
+			});
+			
+			$("#ok2").click(function(){
+					if($("#houseform2").form("validate")){
+						$.post("../HouseInformationController?method=alteration",
+						$("#houseform2").serialize(),
+						function(message){
+							if(message=="success"){
+								$.messager.show({
+									title:"提示",
+									msg:"产权变更成功!"
+								});
+								$("#houseform2").form("reset");
+								$("#housedialog2").dialog("close");
+								$("#dg").datagrid("reload");
+							}else{
+								$.messager.show({
+									title:"提示",
+									msg:"产权变更失败!"
+								});
+							}
+						},
+						"text");
+					}
+			});
+
+			$("#ok3").click(function(){
+					//判断表单数据是否通过验证
+					if($("#houseform3").form("validate")){
+						//$.post(url,data,callback,type)
+						$.post("../HouseInformationController?method=lease",
+						$("#houseform3").serialize(),
+						function(message){
+							//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+							if(message=="success"){
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"租赁变更成功!"
+								});
+								//添加成功后，把修改界面数据清空
+								$("#houseform3").form("reset");
+								//把对话框关闭
+								$("#housedialog3").dialog("close");
+								//datagrid数据表格重新加载
+								$("#dg").datagrid("reload");
+							}else{
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"租赁变更失败!"
+								});
+							}
+						},
+						"text");
+					}
+			});
+			//点击工具栏上的修改项目
+			$("#houselease").click(function(){
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行数据进行修改...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#housedialog3").dialog({
+						title:"租赁变更",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#housedialog3").dialog("open");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#houseform3").form("load",{
+						houseId:array[0].houseId,
+						ownerName:array[0].ownerName,
+						houseType:array[0].houseType,
+						houseArea:array[0].houseArea,
+						houseNature:array[0].houseNature,
+						houseState:array[0].houseState,
+						houseAddress:array[0].houseAddress
+					});
+					
+					//设置表单按钮上的文字
+					$("#ok3").linkbutton({
+						text:"确定",
+						iconCls:"icon-edit"
+					});
+				}
+			});
+			//点击工具栏上的修改项目
+			$("#alteration").click(function(){
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行数据进行修改...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#housedialog2").dialog({
+						title:"产权变更",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#housedialog2").dialog("open");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#houseform2").form("load",{
+						houseId:array[0].houseId,
+						name:array[0].ownerName,
+						houseType:array[0].houseType,
+						houseArea:array[0].houseArea,
+						houseNature:array[0].houseNature,
+						houseState:array[0].houseState,
+						houseAddress:array[0].houseAddress
+					});
+					
+					//设置表单按钮上的文字
+					$("#ok2").linkbutton({
+						text:"确定",
+						iconCls:"icon-edit"
+					});
+				}
+			});
+
+			//点击工具栏上的删除项目
+			$("#housedelete").click(function(){
+				//获取datagrid中的选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的行数是否为0
+				if(array.length==0){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择至少一行数据进行删除...."
+					});
+				}else{
+					//由于删除的行数会多于1行，将多个删除的项目编号进行拼接（以,逗号分隔）方式传递到服务器端，
+					//服务器端再使用循环调用删除方式进行删除。
+					$.messager.confirm("确认","您真的想要删除房屋信息吗?",function(rows){
+						if(rows){
+							//拼接编号字符串
+							var houseIdStr="";
+							//使用循环拼接
+							for(var i=0;i<array.length;i++){
+								houseIdStr=houseIdStr+array[i].houseId+",";
+							}
+							//将最后一个","去掉
+							houseIdStr=houseIdStr.substring(0,houseIdStr.length-1);
+							//使用ajax调用后台的处理代码删除数据
+							$.post("../HouseInformationController?method=delete",
+							{'houseIdStr':houseIdStr},function(message){
+								//判断删除是否成功:
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"房屋信息成功删除!"
+									});
+									
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"房屋信息删除失败!"
+									});
+								}
+							},"text");
+						}
+					});
+				}
+			});
+			
+			//搜索层中的搜索按钮事件
+			$("#search").click(function () {
+				$("#dg").datagrid('load',"/HouseInformationController?method=findAll&"+$("#searchform").serialize());
+			})
+			
+			
+			//刷新按钮
+			$("#refresh").click(function(){
+				//添加成功后，把修改界面数据清空
+				$("#searchform").form("reset");
+				//datagrid数据表格重新加载
+				$("#dg").datagrid("reload","/HouseInformationController?method=findAll");
+			});
+			
+			//取消按钮点击事件
+			$("#cancel").click(function(){
+				//清空表单
+				$("#houseform").form('reset');
+				//关闭对话框
+				$("#housedialog").dialog("close");
+			});
+			$("#cancel2").click(function(){
+				//清空表单
+				$("#houseform2").form('reset');
+				//关闭对话框
+				$("#housedialog2").dialog("close");
+			});
+			$("#cancel3").click(function(){
+				//清空表单
+				$("#houseform3").form('reset');
+				//关闭对话框
+				$("#housedialog3").dialog("close");
+			});
+			//导出按钮点击事件
+			$("#smartart").click(function(){
+				// export to excel导出表格
+			    $('#dg').datagrid('toExcel', 'datagrid.xls');
+			});
+			//打印按钮的点击事件
+			$("#print").click(function(){
+		    	//打印表格
+		    	$('#dg').datagrid('print','DataGrid');	
+			});
+		});
+		
+	</script>
+	</head>
+	<body style="width:100%;height:100%">
+		<table id="dg">
+					
+		</table>
+		<!-- 菜单操作工具栏 -->
+		<div id="toolbar">
+			<!-- 新增项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-add" plain="true" id="houseadd">新增房屋信息</a>
+			
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="alteration">房屋产权变更</a>
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="houseupdate">修改房屋信息</a>
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="houselease">房屋租赁变更</a>
+			<!-- 删除项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="housedelete">删除房屋信息</a>
+			<!-- 打印 -->
+			<a class="easyui-linkbutton" iconCls="icon-print" plain="true" id="print">打印</a>
+			<!-- 导出Excel -->
+			<a class="easyui-linkbutton" iconCls="icon-large-smartart" plain="true" id="smartart">导出</a>
+			<!-- 条件搜索层 -->
+			<form id="searchform" action="#" method="post">
+				<table>
+					<tr>
+						<td>
+							房号：<input type="text" name="houseId" />
+						</td>
+						<td>
+							户型：<input type="text" name="houseType" />
+						</td>
+						<td>
+							业主姓名：<input type="text" name="ownerName" />
+						</td>
+						
+					</tr>	
+					<tr>	
+						<td>
+							性质：<input type="text" name="houseNature" />
+						</td>
+						<td>
+							状态：<input type="text" name="houseState" />
+						</td>
+						<td>
+							<a class="easyui-linkbutton" iconCls="icon-search" plain="false" id="search">搜索</a>
+							<a class="easyui-linkbutton" iconCls="icon-reload" plain="true" id="refresh">刷新</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		
+		<!-- 新增/修改项目对话框 -->
+		<div id="housedialog" class="easyui-dialog" title="新增房屋信息" style="width:400px;height:300px;"
+			 data-options="iconCls:'icon-add',resizable:false,modal:true" closed="true">
+			<form id="houseform">
+				<!-- 采用表格布局  -->
+				<table id="mytable">
+					<tr>
+						<td class="tdalign">房号:</td>
+						<td><input type="text" name="houseId" id="houseId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房屋编号'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">业主姓名:</td>
+						<td><input type="text" name="ownerName" class="easyui-validatebox" data-options="required:false,missingMessage:'请输入业主姓名'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">户型:</td>
+						<td><select name="houseType" class="easyui-combobox" data-options="editable:false,required:false">
+							  <option value=" ">--请选择房屋户型--</option>
+							  <option value="一室一厅">一室一厅</option>
+							  <option value="二室一厅">二室一厅</option>
+							  <option value="三室二厅">三室二厅</option>
+							  <option value="四室二厅">四室二厅</option>
+							  <option value="五室二厅">五室二厅</option>
+							  <option value="商铺">商铺</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="tdalign">面积:</td>
+						<td><input type="text" name="houseArea" class="easyui-numberbox" data-options="min:0,precision:2,required:true,missingMessage:'请输入房屋面积'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">性质:</td>
+						<td><select name="houseNature" class="easyui-combobox" data-options="editable:false,required:false">
+							  <option value="">--请选择房屋性质--</option>
+							  <option value="住宅">住宅</option>
+							  <option value="商铺">商铺</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="tdalign">状态:</td>
+						<td>
+							<select name="houseState" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="未售">未售</option>
+							  <option value="出租">出租</option>
+							  <option value="已售">已售</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdalign">房屋地址:</td>
+						<td><input type="text" name="houseAddress" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房屋地址'"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<a id="ok" class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+							<a id="cancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="housedialog2" class="easyui-dialog" title="产权变更" style="width:400px;height:300px;"
+			 data-options="iconCls:'icon-add',resizable:false,modal:true" closed="true">
+			<form id="houseform2">
+				<!-- 采用表格布局  -->
+				<table id="mytable">
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseType" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="name" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseArea" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseNature" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseState" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseAddress" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">房号:</td>
+						<td><input type="text" name="houseId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房屋编号'" readonly="readonly"></td>
+					</tr>
+<!--					<tr>-->
+<!--						<td class="tdalign">业主编号:</td>-->
+<!--						<td><input type="text" name="ownerId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入业主编号'"></td>-->
+<!--					</tr>-->
+					<tr>
+						<td class="tdalign">业主姓名:</td>
+						<td><input type="text" name="ownerName" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入业主姓名'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">性别:</td>
+						<td><select name="ownerSex" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="">--请选择性别--</option>
+							  <option value="男">男</option>
+							  <option value="女">女</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="tdalign">身份证号码:</td>
+						<td><input type="text" name="ownerIdcard" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入身份证号码'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">电话号码:</td>
+						<td><input type="text" name="ownerTelphone" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入电话号码 '"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">邮箱:</td>
+						<td><input type="text" name="ownerEmail" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入邮箱'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">邮寄地址:</td>
+						<td><input type="text" name="ownerAddress" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入邮寄地址'"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<a id="ok2" class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+							<a id="cancel2" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="housedialog3" class="easyui-dialog" title="租赁变更" style="width:400px;height:300px;"
+			 data-options="iconCls:'icon-add',resizable:false,modal:true" closed="true">
+			<form id="houseform3">
+				<!-- 采用表格布局  -->
+				<table id="mytable">
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseType" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="ownerName" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseArea" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseNature" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseState" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign"></td>
+						<td><input type="hidden" name="houseAddress" class="easyui-validatebox" data-options="required:false"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">房号:</td>
+						<td><input type="text" name="houseId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房屋编号'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">租户姓名:</td>
+						<td><input type="text" name="lesseeName" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入性别'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">性别:</td>
+						<td><select name="lesseeGender" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="">--请选择性别--</option>
+							  <option value="男">男</option>
+							  <option value="女">女</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="tdalign">身份证号码:</td>
+						<td><input type="text" name="lesseeIdcard" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入电话号码 '"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">电话号码:</td>
+						<td><input type="text" name="lesseeTelphone" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入邮箱'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">起租时间:</td>
+						<td><input type="text" name="startTime" class="easyui-datebox" data-options="required:true,missingMessage:'请输入邮寄地址'"></td>
+					</tr><tr>
+						<td class="tdalign">退租时间:</td>
+						<td><input type="text" name="endTime" class="easyui-datebox" data-options="required:true,missingMessage:'请输入邮寄地址'"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<a id="ok3" class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+							<a id="cancel3" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</body>
+</html>

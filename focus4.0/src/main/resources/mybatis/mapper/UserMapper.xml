@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.UserMapper">
+    <insert id="add">
+        insert into users values(#{uId},#{uName},#{uPassword},#{uEmail})
+    </insert>
+    <update id="update">
+        update users set uEmail=#{uEmail},uName=#{uName},uPassword=#{uPassword} where uId=#{uId};
+    </update>
+    <delete id="delete">
+        delete from users where uId=#{uId};
+    </delete>
+
+    <select id="login" resultType="com.xzjy.pojo.Users">
+        select * from Users where uId=#{uId};
+    </select>
+    <select id="findAll" resultType="com.xzjy.pojo.Users">
+        select * from users
+        <where>
+            <if test="uId!=null">
+                and uId like "%"#{uId}"%"
+            </if>
+            <if test="uName!=null">
+                and uName like "%"#{uName}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from users
+        <where>
+            <if test="uId!=null">
+                and uId like "%"#{uId}"%"
+            </if>
+            <if test="uName!=null">
+                and uName like "%"#{uName}"%"
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>公告信息表</title>
+<!-- 导入easyui样式 -->
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+<!-- 导入easyui相关的js库公告(函数) -->
+<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+<!-- 脚本代码 -->
+<script type="text/javascript">
+	$(function() {
+		/* 对表格对象加载datagrid方法 */
+		$("#dg").datagrid({
+			idFiled : 'fileId',//主键字段
+			fit : true,//填充容器
+			url : "../RegulatoryController?method=findAll", //数据源路径
+			nowrap : true,
+			
+			striped: true,//斑马线
+			
+			fitColumns : true,//自动填充列
+			rownumbers : true,//增加一个行号列
+			
+			//设置datagrid数据表格对象中的数据列
+			columns : [ [ {
+				field : 'fileId',//字段名
+				title : '公告编号',//datagrid数据表格中显示的列的标题
+				align : 'center',//数据显示的位置:居中
+				width : '20%' //数据列的宽度
+			}, {
+				field : 'fileTitle',
+				title : '标题',
+				align : 'center',
+				width : '20%'
+			}, {
+				field : 'fileTheme',
+				title : '主题',
+				align : 'center',
+				width : '20%'
+			}, {
+				field : 'fileState',
+				title : '状态',
+				align : 'center',
+				width : '20%'
+			}, {
+				field : 'executionTime',
+				title : '执行时间',
+				align : 'center',
+				width : '20%'
+			}] ],
+			//datagrid底部是否显示分页工具栏
+			pagination : true,
+			//底部分页工具栏中，页面记录数列表
+			pageList : [ 10, 20, 30, 40 ],
+			//分页工具栏显示位置
+			pagePosition : 'bottom',
+			//当前页面默认大小(每页显示多少行数据)
+			pageSize : 10
+		});
+	});
+</script>
+
+</head>
+<body style="width: 100%; height: 100%;">
+	<!-- 显示数据的表格 -->
+	<table id="dg">
+
+	</table>
+
+</body>
+</html>

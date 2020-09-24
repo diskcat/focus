@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>业主信息表</title>
+	<!-- 导入easyui样式 -->
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+	<!-- 导入easyui相关的js库文件(函数) -->
+	<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../easyui/datagrid-export.js"></script>
+		
+	<!-- 自定义的样式 -->
+	<style type="text/css">
+		#mytable{
+			width:100%;
+			border-collapse:collapse;
+		}
+		#mytable td{
+			font-size:12px;
+		}
+		.tdalign{
+			text-align: right;
+			width:40%;
+		}
+		#smartart,#print{
+			float:right;
+			margin:15px 5px;
+		}
+	</style>
+	<!-- 脚本代码 -->
+	<script type="text/javascript">
+		$(function(){
+			/* 对表格对象加载datagrid方法 */
+			$("#dg").datagrid({
+				idFiled:'ownerId',//主键字段
+				toolbar:'#toolbar',//绑定工具栏
+				fit:true,//填充容器
+				url:"../OwnerInformationController?method=findAll", //数据源路径
+				dataType:"json",
+				nowrap:true,
+				striped: true,//斑马线
+				fitColumns:true,//自动填充列
+				rownumbers:true,//增加一个行号列
+				loadMsg:'正在玩命加载，请稍候....',//在页面显示数据之前，显示的文本
+				//冻结列：让某些列永远显示在页面中
+				frozenColumns:[ [{
+					'field':'checkbox',//复选框列
+					'checkbox':true
+				}] ],
+				//设置datagrid数据表格对象中的数据列
+				columns:[ [{
+					field:'ownerId',//字段名
+					title:'业主编号',//datagrid数据表格中显示的列的标题
+					align:'center',//数据显示的位置:居中
+					width:'11.5%' //数据列的宽度
+				},{
+					field:'houseId',
+					title:'房号',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerName',
+					title:'业主姓名',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerSex',
+					title:'性别',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerIdcard',
+					title:'身份证号码',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerTelphone',
+					title:'电话号码',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerEmail',
+					title:'邮箱',
+					align:'center',
+					width:'11.5%'
+				},{
+					field:'ownerAddress',
+					title:'邮寄地址',
+					align:'center',
+					width:'11.5%'
+				}] ],
+				//datagrid底部是否显示分页工具栏
+				pagination:true,
+				//底部分页工具栏中，页面记录数列表
+				pageList:[5,10,15,20],
+				//分页工具栏显示位置
+				pagePosition:'bottom',
+				//当前页面默认大小(每页显示多少行数据)
+				pageSize:5
+			});
+			//点击工具栏上"新增项目"按钮操作
+			$("#owneradd").click(function(){
+				//在这里移除业主编号
+				$("#owno").hide();
+				$("#ownerform").form("reset");
+				$("#ok").linkbutton({
+						text:"确定",
+						iconCls:"icon-add"
+					});
+				$("#ownerdialog").dialog({
+						title:"新增业主",
+						iconCls:"icon-add"
+					});
+				$("#ownerdialog").dialog("open");
+			});
+			
+			//新增/修改对话框中的"确定"按钮操作
+			$("#ok").click(function(){
+				//获得按钮上的文字，确定它是增加还是修改
+				var btnText=$(this).text();
+				//判断它是“确定”还是"修改"按钮
+				if(btnText.trim()=="确定"){ //新增
+					//判断用户输入的数据是否通过验证
+					if($("#ownerform").form("validate")){
+						//使用ajax方式提交数据到控制层
+						$.ajax({
+							type:"post",
+							url:"../OwnerInformationController",
+							async:true,
+							data:$("#ownerform").serialize()+"&method=add",//表单数据序列化
+							dataType:"text",
+							success:function(message){
+								//判断服务器端返回的文本内容
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"业主信息添加成功!"
+									});
+									//添加成功后，把添加界面数据清空
+									$("#ownerform").form("reset");
+									//把对话框关闭
+									$("#ownerdialog").dialog("close");
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"项目添加失败!"
+									});
+								}
+							}
+						});
+					}else{
+						//右下角显示一个信息提示
+						$.messager.show({
+							title:"提示",
+							msg:"数据验证没有通过，不能保存业主信息..."
+						});
+					}
+				}else{ //修改操作
+					//对数据进行修改
+					//判断表单数据是否通过验证
+					if($("#ownerform").form("validate")){
+						//$.post(url,data,callback,type)
+						$.post("../OwnerInformationController?method=update",
+						$("#ownerform").serialize(),
+						function(message){
+							//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+							if(message=="success"){
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"业主信息修改成功!"
+								});
+								//添加成功后，把修改界面数据清空
+								$("#ownerform").form("reset");
+								//把对话框关闭
+								$("#ownerdialog").dialog("close");
+								//datagrid数据表格重新加载
+								$("#dg").datagrid("reload");
+							}else{
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"业主信息修改失败!"
+								});
+							}
+						},
+						"text");
+					}
+				}
+			});
+			
+			//点击工具栏上的修改项目
+			$("#ownerupdate").click(function(){
+				$("#owno").show();
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行数据进行修改...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#ownerdialog").dialog({
+						title:"修改业主信息",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#ownerdialog").dialog("open");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#ownerform").form("load",{
+						ownerId:array[0].ownerId,
+						houseId:array[0].houseId,
+						ownerName:array[0].ownerName,
+						ownerSex:array[0].ownerSex,
+						ownerIdcard:array[0].ownerIdcard,
+						ownerTelphone:array[0].ownerTelphone,
+						ownerEmail:array[0].ownerEmail,
+						ownerAddress:array[0].ownerAddress
+					});
+					
+					//设置表单按钮上的文字
+					$("#ok").linkbutton({
+						text:"修改",
+						iconCls:"icon-edit"
+					});
+				}
+			});
+			
+			//点击工具栏上的删除项目
+			$("#ownerdelete").click(function(){
+				//获取datagrid中的选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的行数是否为0
+				if(array.length==0){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择至少一行数据进行删除...."
+					});
+				}else{
+					//由于删除的行数会多于1行，将多个删除的项目编号进行拼接（以,逗号分隔）方式传递到服务器端，
+					//服务器端再使用循环调用删除方式进行删除。
+					$.messager.confirm("确认","您真的想要删除业主信息吗?",function(rows){
+						if(rows){
+							//拼接编号字符串
+							var ownerIdStr="";
+							//使用循环拼接
+							for(var i=0;i<array.length;i++){
+								ownerIdStr=ownerIdStr+array[i].ownerId+",";
+							}
+							//将最后一个","去掉
+							ownerIdStr=ownerIdStr.substring(0,ownerIdStr.length-1);
+							//使用ajax调用后台的处理代码删除数据
+							$.post("../OwnerInformationController?method=delete",
+							{'ownerIdStr':ownerIdStr},function(message){
+								//判断删除是否成功:
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"业主信息成功删除!"
+									});
+									
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"业主信息删除失败!"
+									});
+								}
+							},"text");
+						}
+					});
+				}
+			});
+			
+			//搜索层中的搜索按钮事件
+			$("#search").click(function () {
+				$("#dg").datagrid('load',"/OwnerInformationController?method=findAll&"+$("#searchform").serialize());
+			})
+			
+			//刷新按钮
+			$("#refresh").click(function(){
+				//添加成功后，把修改界面数据清空
+				$("#searchform").form("reset");
+				//datagrid数据表格重新加载
+				$("#dg").datagrid("reload","/OwnerInformationController?method=findAll");
+			});
+			
+			//取消按钮点击事件
+			$("#cancel").click(function(){
+				$("#ownerform").form('reset');
+				$("#ownerdialog").dialog("close");
+			});
+			
+			//导出按钮点击事件
+			$("#smartart").click(function(){
+				// export to excel导出表格
+			    $('#dg').datagrid('toExcel', 'datagrid.xls');
+			});
+			//打印按钮的点击事件
+			$("#print").click(function(){
+		    	//打印表格
+		    	$('#dg').datagrid('print','DataGrid');	
+			});
+		});
+		
+	</script>
+	</head>
+	<body style="width:100%;height:100%">
+		<table id="dg">
+					
+		</table>
+		<!-- 菜单操作工具栏 -->
+		<div id="toolbar">
+			<!-- 新增项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-add" plain="true" id="owneradd">新增业主信息</a>
+			<!-- 修改项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="ownerupdate">修改业主信息</a>
+			<!-- 删除项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="ownerdelete">删除业主信息</a>
+			<!-- 打印 -->
+			<a class="easyui-linkbutton" iconCls="icon-print" plain="true" id="print">打印</a>
+			<!-- 导出Excel -->
+			<a class="easyui-linkbutton" iconCls="icon-large-smartart" plain="true" id="smartart">导出</a>
+			<!-- 条件搜索层 -->			
+			<form id="searchform" action="#" method="post">
+				<table>
+					<tr>
+						<td>
+							业主编号：<input type="text" name="ownerId" />
+						</td>
+						<td>
+							房号：<input type="text" name="houseId" />
+						</td>
+						<td>
+							业主姓名：<input type="text" name="ownerName" />
+						</td>
+						<td>
+							<a class="easyui-linkbutton" iconCls="icon-search" plain="false" id="search">搜索</a>
+							<a class="easyui-linkbutton" iconCls="icon-reload" plain="true" id="refresh">刷新</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		
+		<!-- 新增/修改项目对话框 -->
+		<div id="ownerdialog" class="easyui-dialog" title="新增业主信息" style="width:400px;height:300px;"
+			 data-options="iconCls:'icon-add',resizable:false,modal:true" closed="true">
+			<form id="ownerform">
+				<!-- 采用表格布局  -->
+				<table id="mytable">
+					<tr id="owno">
+						<td class="tdalign">业主编号:</td>
+						<td><input readOnly="readOnly" type="text" name="ownerId" class="easyui-validatebox"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">房号:</td>
+						<td><input type="text" name="houseId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房号'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">业主姓名:</td>
+						<td><input type="text" name="ownerName" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入业主姓名'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">性别:</td>
+						<td>
+							<select name="ownerSex" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="">--请选择性别--</option>
+							  <option value="男">男</option>
+							  <option value="女">女</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="tdalign">身份证号码:</td>
+						<td><input type="text" name="ownerIdcard" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入身份证号码'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">电话号码:</td>
+						<td><input type="text" name="ownerTelphone" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入电话号码 '"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">邮箱:</td>
+						<td><input type="text" name="ownerEmail" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入邮箱 '"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">邮寄地址:</td>
+						<td><input type="text" name="ownerAddress" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入邮寄地址'"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<a id="ok" class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+							<a id="cancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</body>
+</html>

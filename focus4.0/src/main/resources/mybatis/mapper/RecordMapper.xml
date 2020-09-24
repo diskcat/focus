@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.RecordMapper">
+    <insert id="add">
+        insert into record values(#{recordId},#{houseId},#{ownerTelphone},#{recordType},#{recordMoney},#{recordDate});
+    </insert>
+
+    <update id="update">
+        update record set houseId=#{houseId},ownerTelphone=#{ownerTelphone},recordType=#{recordType},
+        recordMoney=#{recordMoney},recordDate=#{recordDate} where recordId=#{recordId}
+    </update>
+
+    <delete id="delete">
+        delete from record where recordId=#{recordId}
+    </delete>
+
+
+    <select id="getRecordByName" resultType="com.xzjy.pojo.Record">
+        select * from record where houseId=#{uId} limit #{page},#{rows};
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from record where houseId=#{uId};
+    </select>
+
+    <select id="findAll" resultType="com.xzjy.pojo.Record">
+         select * from record
+         <where>
+            <if test="recordId!=null">
+                and recordId like "%"#{recordId}"%"
+            </if>
+             <if test="houseId!=null">
+                 and houseId like "%"#{houseId}"%"
+             </if>
+             <if test="recordType!=null">
+                 and recordType like "%"#{recordType}"%"
+             </if>
+         </where>
+         limit #{param1},#{rows};
+    </select>
+
+    <select id="getTotals" resultType="java.lang.Integer">
+        select count(*) from record
+        <where>
+            <if test="recordId!=null">
+                and recordId like "%"#{recordId}"%"
+            </if>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="recordType!=null">
+                and recordType like "%"#{recordType}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="java.lang.String">
+        select sum(recordMoney) from record where recordDate between #{before} and #{after};
+    </select>
+
+</mapper>

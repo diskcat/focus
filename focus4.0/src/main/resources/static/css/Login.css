@@ -1,0 +1,232 @@
+#divone {
+	padding-top: 50px;
+	height: 600px;
+	background-size: 1725px 700px;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+#tihuan {
+	background-color: #FFFFFF;
+	width: 400px;
+	height: 351px;
+	margin-left: 1000px;
+	padding-top: 38px;
+}
+
+.topLogin {
+	font-size: 20px;
+	margin-left: 50px;
+	margin-bottom: 20px;
+}
+
+#zhdl {
+	font-size: 25px;
+	text-decoration: none;
+	color: #B3B3B3;
+}
+
+.topLogin span {
+	font-size: 30px;
+	color: #B3B3B3;
+	font-weight: lighter;
+}
+
+#saoma {
+	font-size: 25px;
+	text-decoration: none;
+	color: #B3B3B3;
+}
+
+#zh {
+	word-spacing: 10px;
+	margin-left: 50px;
+	border: 1px solid #000000;
+	border-color: #B3B3B3;
+	width: 300px;
+	height: 40px;
+	margin-bottom: 32px;
+}
+
+#zh2 {
+	border: none;
+	height: 38px;
+	font-size: 15px;
+	margin-left: 10px
+}
+
+#mm {
+	word-spacing: 10px;
+	border: 1px solid #000000;
+	margin-left: 50px;
+	border-color: #B3B3B3;
+	width: 300px;
+	height: 45px;
+	margin-bottom: 32px;
+}
+
+#mm2 {
+	border: none;
+	height: 38px;
+	font-size: 15px;
+	margin-left: 10px
+}
+
+#anniu2 {
+	background-color: darkorange;
+	border: none;
+	color: #FFFFFF;
+	width: 300px;
+	height: 50px;
+}
+
+.thesame {
+	color: #B3B3B3;
+}
+
+#xiatu {
+	height: 100px;
+	width: 50px;
+}
+
+a {
+	text-decoration: none;
+}
+
+html,body{
+	width:100%;
+	height:100%;
+}
+.reg{
+	width:100%;
+	height:100%;
+	background: url(../images/backgronud.png) no-repeat;
+	background-size: 100% 100%;
+}
+.login{
+	width:100%;
+	height:100%;
+	background: url(../images/backgronud.png) no-repeat;
+	background-size: 100% 100%;
+}
+.login img,.reg img{
+	width:auto;
+}
+.login form,.reg form{
+	position: fixed;
+	top:15%;
+	right:140px;
+	padding:20px 0;
+	text-align: center;
+	z-index: 10;
+	background: #fff;
+}
+
+.msg-warn{
+    position: relative;
+    background: #fef4e5;
+    color: #666;
+    display: inline-block;
+    border: 1px solid #f6c090;
+    padding: 3px 31px 3px 31px;
+    line-height: 15px;
+    height: auto;
+}
+.login form{
+	top:18%;
+	width:440px;
+	height: 310px;
+	border:5px solid #EEEEEE
+}
+.login form h1 img{
+	width:90px;
+	height:60px;
+}
+.reg form{
+	width:480px;
+	height:450px;
+	background: #fff;
+	border:10px solid #EEEEEE;
+}
+.reg form h1,.login form h1{
+	border-bottom:1px solid #dbdbdb;
+	padding-bottom: 20px;
+}
+.reg form h2{
+	padding-top:8px;
+}
+.reg form p,.login form p{
+	margin-top:15px;
+}
+.reg form a.off,.login form a.off{
+	position: absolute;
+	right: 20px;
+	top:20px;
+}
+.reg form input,.login form input{
+	width:270px;
+	height:25px;
+	border-radius: 3px;
+	align:left;
+}
+.reg form table{
+	margin:20px 50px;
+	font-size:14px;
+	
+}
+.reg form tr{
+	line-height:40px;
+}
+#reg_td{
+	text-align:center;
+}
+.reg form table td{
+	text-align:right;
+	
+}
+.reg form input[type="text"],.login form input[type="text"]{
+	border:1px solid #dbdbdb;
+	font-size: 15px;
+	padding-left:10px;
+}
+.reg form input[type="password"],.login form input[type="password"]{
+	border:1px solid #dbdbdb;
+	font-size: 15px;
+	padding-left:10px;
+}
+.reg input[type="submit"],.login input[type="submit"]{
+	width:280px;
+	background: #C10000;
+	font-size: 20px;
+	border:none;
+	color:#fff;
+}
+div.reg form input.code{
+	width:150px;
+}
+div.reg form p.txtL{
+	text-align: left;
+}
+div.reg form p.txtL img{
+	width:97px;
+	height:37px;
+	vertical-align: middle;
+}
+div.reg form p.txtL a{
+	color:#c10000;
+}
+
+.reg form p.txt,.login form p.txt{
+	width:280px;
+	margin:10px auto 0;
+	text-align: right;
+}
+.reg p.txt a,.login p.txt a{
+	color:#666;
+	text-decoration: underline;
+}
+div.login form p.txt a{
+	margin-left:20px;
+	cursor: pointer;
+}
+

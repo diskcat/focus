@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>公告信息表</title>
+<!-- 导入easyui样式 -->
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+<!-- 导入easyui相关的js库公告(函数) -->
+<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../easyui/datagrid-export.js"></script>
+
+<!-- 自定义的样式 -->
+<style type="text/css">
+#mytable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+#mytable td {
+	font-size: 12px;
+}
+
+#smartart,#print{
+	float:right;
+	margin:15px 5px;
+	}
+
+.tdalign {
+	text-align: right;
+	width: 40%;
+}
+</style>
+<!-- 脚本代码 -->
+<script type="text/javascript">
+	$(function() {
+		/* 对表格对象加载datagrid方法 */
+		$("#dg").datagrid({
+			idFiled : 'fileId',//主键字段
+			toolbar : '#toolbar',//绑定工具栏
+			fit : true,//填充容器
+			url : "../RegulatoryController?method=findAll", //数据源路径
+			nowrap : true,
+			
+			striped: true,//斑马线
+			
+			fitColumns : true,//自动填充列
+			rownumbers : true,//增加一个行号列
+			loadMsg : '正在玩命加载，请稍候....',//在页面显示数据之前，显示的文本
+			//冻结列：让某些列永远显示在页面中
+			frozenColumns : [ [ {
+				'field' : 'checkbox',//复选框列
+				'checkbox' : true
+			} ] ],
+			//设置datagrid数据表格对象中的数据列
+			columns : [ [ {
+				field : 'fileId',//字段名
+				title : '公告编号',//datagrid数据表格中显示的列的标题
+				align : 'center',//数据显示的位置:居中
+				width : '18%' //数据列的宽度
+			}, {
+				field : 'fileTitle',
+				title : '标题',
+				align : 'center',
+				width : '18%'
+			}, {
+				field : 'fileTheme',
+				title : '主题',
+				align : 'center',
+				width : '18%'
+			}, {
+				field : 'fileState',
+				title : '状态',
+				align : 'center',
+				width : '18%'
+			}, {
+				field : 'executionTime',
+				title : '执行时间',
+				align : 'center',
+				width : '18%'
+			}] ],
+			//datagrid底部是否显示分页工具栏
+			pagination : true,
+			//底部分页工具栏中，页面记录数列表
+			pageList : [ 5, 10, 15, 20 ],
+			//分页工具栏显示位置
+			pagePosition : 'bottom',
+			//当前页面默认大小(每页显示多少行数据)
+			pageSize : 5
+		});
+
+		//点击工具栏上"新增公告信息"按钮操作
+		$("#add").click(function() {
+			//修改窗口标题、图标
+			$("#dialog").dialog({
+				title : "新增公告",
+				iconCls : "icon-add"
+			});
+			//修改按钮上的文字、图标
+			$("#ok").linkbutton({
+				text : "确定",
+				iconCls : "icon-add"
+			});
+			//添加成功后，把修改界面数据清空
+			$("#form").form("reset");
+			//打开窗口
+			$("#dialog").dialog("open");
+		});
+		//新增/修改对话框中的"确定"按钮操作
+		$("#ok").click(
+				function() {
+					//获得按钮上的文字，确定它是增加还是修改
+					var btnText = $(this).text();
+					//判断它是“确定”还是"修改"按钮
+					if (btnText.trim() == "确定") { //新增
+						//判断用户输入的数据是否通过验证
+						if ($("#form").form("validate")) {
+							//使用ajax方式提交数据到控制层
+							$.ajax({
+								type : "post",
+								url : "../RegulatoryController",
+								async : true,
+								data : $("#form").serialize() + "&method=add",//表单数据序列化
+								dataType : "text",
+								success : function(message) {
+									//判断服务器端返回的文本内容
+									if (message == "success") {
+										//右下角显示一个信息提示
+										$.messager.show({
+											title : "提示",
+											msg : "公告添加成功!"
+										});
+										//添加成功后，把添加界面数据清空
+										$("#form").form("reset");
+										//把对话框关闭
+										$("#dialog").dialog("close");
+										//datagrid数据表格重新加载
+										$("#dg").datagrid("reload");
+									} else {
+										//右下角显示一个信息提示
+										$.messager.show({
+											title : "提示",
+											msg : "公告添加失败!"
+										});
+									}
+								}
+							});
+						} else {
+							//右下角显示一个信息提示
+							$.messager.show({
+								title : "提示",
+								msg : "数据验证没有通过，不能保存公告信息..."
+							});
+						}
+					} else { //修改操作
+						//对数据进行修改
+						//判断表单数据是否通过验证
+						if ($("#form").form("validate")) {
+							//$.post(url,data,callback,type)
+							$.post("../RegulatoryController?method=update", $("#form")
+									.serialize(), function(message) {
+								//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+								if (message == "success") {
+									//右下角显示一个信息提示
+									$.messager.show({
+										title : "提示",
+										msg : "公告信息修该成功!"
+									});
+									//添加成功后，把修改界面数据清空
+									$("#form").form("reset");
+									//把对话框关闭
+									$("#dialog").dialog("close");
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								} else {
+									//右下角显示一个信息提示
+									$.messager.show({
+										title : "提示",
+										msg : "公告信息修改失败!"
+									});
+								}
+							}, "text");
+						}
+					}
+				});
+
+		//点击工具栏上的修改公告信息
+		$("#update").click(function() {
+			//获取datagrid中选择的数据行
+			var array = $("#dg").datagrid("getSelections");
+			//判断选择的数据行是否为多行或未选择数据行
+			if (array.length == 0 || array.length > 1) {
+				//弹出提示信息
+				$.messager.show({
+					title : "提示信息",
+					msg : "请选择一行数据进行修改...."
+				});
+			} else {
+				//客户正确选择了一行数据
+				//打开增加对话框，修改对话框的标题及图标，按钮文字
+				$("#dialog").dialog({
+					title : "修改公告信息",
+					iconCls : "icon-edit"
+				});
+
+				//打开对话框
+				$("#dialog").dialog("open");
+				//把要修改的数据行（array[0]行）加载到修改表单中。
+				$("#form").form("load", {
+					fileId : array[0].fileId,
+					fileTitle : array[0].fileTitle,
+					fileTheme : array[0].fileTheme,
+					fileState : array[0].fileState,
+					executionTime : array[0].executionTime,
+					});
+
+				//设置表单按钮上的文字
+				$("#ok").linkbutton({
+					text : "修改",
+					iconCls : "icon-edit"
+				});
+			}
+		});
+
+		//点击工具栏上的删除公告信息
+		$("#delete").click(function() {
+			//获取datagrid中的选择的数据行
+			var array = $("#dg").datagrid("getSelections");
+			//判断选择的行数是否为0
+			if (array.length == 0) {
+				//弹出提示信息
+				$.messager.show({
+					title : "提示信息",
+					msg : "请选择至少一行数据进行删除...."
+				});
+			} else {
+				//由于删除的行数会多于1行，将多个删除的公告信息编号进行拼接（以,逗号分隔）方式传递到服务器端，
+				//服务器端再使用循环调用删除方式进行删除。
+				$.messager.confirm("确认", "您真的想要删除公告信息数据吗?", function(rows) {
+					//拼接编号字符串
+					var fileIdStr = "";
+					//使用循环拼接
+					for (var i = 0; i < array.length; i++) {
+						fileIdStr = fileIdStr + array[i].fileId + ",";
+					}
+					//将最后一个","去掉
+					fileIdStr = fileIdStr.substring(0, fileIdStr.length - 1);
+					//使用ajax调用后台的处理代码删除数据
+					$.post("../RegulatoryController?method=delete", {
+						'fileIdStr' : fileIdStr
+					}, function(message) {
+						//判断删除是否成功:
+						if (message == "success") {
+							//右下角显示一个信息提示
+							$.messager.show({
+								title : "提示",
+								msg : "公告信息成功删除!"
+							});
+
+							//datagrid数据表格重新加载
+							$("#dg").datagrid("reload");
+						} else {
+							//右下角显示一个信息提示
+							$.messager.show({
+								title : "提示",
+								msg : "删除公告信息失败!"
+							});
+						}
+					}, "text");
+				});
+			}
+		});
+		
+		
+		//刷新按钮
+		$("#refresh").click(function(){
+//添加成功后，把修改界面数据清空
+			$("#searchform").form("reset");
+			//datagrid数据表格重新加载
+			$("#dg").datagrid("reload","/RegulatoryController?method=findAll");
+		});
+		
+		//导出按钮点击事件
+		$("#smartart").click(function(){
+			// export to excel导出表格
+		    $('#dg').datagrid('toExcel', 'datagrid.xls');
+		});
+		//打印按钮的点击事件
+		$("#print").click(function(){
+	    	//打印表格
+	    	$('#dg').datagrid('print','DataGrid');	
+		});
+		
+		//对话框中的"取消"按钮操作
+		$('#cancel').click(function(){
+			//取消后，把修改界面数据清空
+			$("#form").form("reset");
+			//把对话框关闭
+			$("#dialog").dialog("close");
+		});
+		
+		//搜索层中的搜索按钮事件
+		$("#search").click(function () {
+			$("#dg").datagrid('load',"/RegulatoryController?method=findAll&"+$("#searchform").serialize());
+		})
+	});
+</script>
+
+</head>
+<body style="width: 100%; height: 100%;">
+	<!-- 显示数据的表格 -->
+	<table id="dg">
+
+	</table>
+	<!-- 菜单操作工具栏 -->
+	<div id="toolbar">
+		<!-- 新增公告 -->
+		<a class="easyui-linkbutton" iconCls="icon-add" plain="true" id="add">新增公告</a>
+		<!-- 修改公告信息 -->
+		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true"
+			id="update">修改公告信息</a>
+		<!-- 删除公告信息 -->
+		<a class="easyui-linkbutton" iconCls="icon-remove" plain="true"
+			id="delete">删除公告信息</a>
+		<!-- 打印 -->
+		<a class="easyui-linkbutton" iconCls="icon-print" plain="true"
+			id="print">打印</a>
+		<!-- 导出Excel -->
+		<a class="easyui-linkbutton" iconCls="icon-large-smartart"
+			plain="true" id="smartart">导出</a>	
+		<form id="searchform" action="#" method="post">
+			<table>
+				<tr>
+					<td>主题： <input type="text" name="fileTheme">
+					</td>
+					<td>状态： <input type="text" name="fileState">
+					</td>
+		
+					<td><a class="easyui-linkbutton" iconCls="icon-search"
+						plain="false" id="search">搜索公告</a>
+						<a class="easyui-linkbutton" iconCls="icon-reload" plain="false" id="refresh">刷新</a>
+						</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 新增/修改公告对话框 -->
+	<div id="dialog" class="easyui-dialog" title="新增公告"
+		style="width: 400px; height: 300px;"
+		data-options="iconCls:'icon-add',resizable:false,modal:true"
+		closed="true">
+		<form id="form">
+			<!-- 采用表格布局  -->
+			<table id="mytable">
+
+				<tr>
+					<td class="tdalign">公告编号:</td>
+					<td><input type="text" name="fileId" class="easyui-validatebox"
+						data-options="required:true,missingMessage:'请输入公告编号'"></td>
+				</tr>
+				<tr>
+					<td class="tdalign">标题:</td>
+					<td><input type="text" name="fileTitle"
+						class="easyui-validatebox"
+						data-options="required:true,missingMessage:'请输入标题'"></td>
+				</tr>
+				<tr>
+					<td class="tdalign">主题:</td>
+					<td><input type="text" name="fileTheme" class="easyui-validatebox"
+						data-options="required:true,missingMessage:'请输入主题'"></td>
+				</tr>
+				<tr>
+					<td class="tdalign">状态:</td>
+					<td><select name="fileState" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="">--请选择--</option>
+							  <option value="准备中">准备中</option>
+							  <option value="开展中">开展中</option>
+							  <option value="配合中">配合中</option>
+							</select></td>
+				</tr>
+				<tr>
+					<td class="tdalign">执行时间:</td>
+					<td><input type="text" name="executionTime"
+						class="easyui-datebox"
+						data-options="required:true,missingMessage:'请输入执行时间'"></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center"><a id="ok"
+						class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+						<a id="cancel" class="easyui-linkbutton"
+						data-options="iconCls:'icon-cancel'">取消</a></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
