@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Record {
+    //这里改成了String
     private Integer recordId;
     //业主姓名
     private String houseId;

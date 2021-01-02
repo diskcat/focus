@@ -53,7 +53,7 @@
         </where>
     </select>
     <select id="getMoney" resultType="java.lang.Double">
-        select arrearageMoney from arrearage where ownerName=#{ownerName};
+        select arrearageMoney from arrearage where houseId=#{houseId};
     </select>
 
     <select id="getAllArrearage" resultType="com.xzjy.pojo.Arrearage">

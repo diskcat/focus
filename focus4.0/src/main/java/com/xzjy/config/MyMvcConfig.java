@@ -35,5 +35,8 @@ public class MyMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/Back/ArrearageCrud").setViewName("admin/ArrearageCrud");
         registry.addViewController("/Back/RecordCrud").setViewName("admin/RecordCrud");
 
+        //返回
+        registry.addViewController("/ownnerIndex").setViewName("user/ownerService");
+
     }
 }

@@ -56,7 +56,7 @@ public class ArrearageController {
 
     private String jiaofei(HttpServletRequest request) {
         Arrearage arrearage = getArrearage(request);
-        double money = arrearageMapper.getMoney(arrearage.getOwnerName());
+        double money = arrearageMapper.getMoney(arrearage.getHouseId());
         TransactionStatus transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
         try {
             Date date = new Date();

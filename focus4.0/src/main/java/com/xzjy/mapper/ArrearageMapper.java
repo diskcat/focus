@@ -21,7 +21,7 @@ public interface ArrearageMapper {
 
     int count(String houseId, String ownerName, String state);
 
-    double getMoney(String ownerName);
+    double getMoney(String houseId);
 
     List<Arrearage> getAllArrearage();
 }
