@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>lianxi</title>
+    <link rel="icon" href="../images/logo.ico" type="images/x-ico" />
+    <!-- 导入easyui样式 -->
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+    <!-- 导入easyui相关的js库文件(函数) -->
+    <script type="text/javascript" src="../easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $("#dg").datagrid({
+                //idFiled:'recordId',//主键字段
+                toolbar:'#toolbar',//绑定工具栏
+                fit:true,//填充容器
+                url:"../findAllInformation", //数据源路径
+                dataType:"json",
+                nowrap:true,
+                fitColumns:true,//自动填充列
+
+                //设置datagrid数据表格对象中的数据列 empName,backPost,tel
+                columns:[ [ {
+                    field:'empName',//字段名
+                    title:'姓名',//datagrid数据表格中显示的列的标题
+                    align:'center',//数据显示的位置:居中
+                    width:'30%' //数据列的宽度
+                },{
+                    field:'backPost',
+                    title:'职位',
+                    align:'center',
+                    width:'30%'
+                },{
+                    field:'tel',
+                    title:'手机号码',
+                    align:'center',
+                    width:'30%'
+                }] ],
+                //datagrid底部是否显示分页工具栏
+                pagination:true,
+                //底部分页工具栏中，页面记录数列表
+                pageList:[10,20,30,40],
+                //分页工具栏显示位置
+                pagePosition:'bottom',
+                //当前页面默认大小(每页显示多少行数据)
+                pageSize:10
+            });
+        });
+    </script>
+</head>
+<body style="width: 100%; height: 100%;">
+<!-- 显示数据的表格 -->
+<table id="dg">
+
+</table>
+</body>
+</html>

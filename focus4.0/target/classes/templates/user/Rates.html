@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>收费标准表</title>
+	<!-- 导入easyui样式 -->
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+	<!-- 导入easyui相关的js库文件(函数) -->
+	<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+	
+	<!-- 脚本代码 -->
+	<script type="text/javascript">
+		$(function(){
+			/* 对表格对象加载datagrid方法 */
+				$("#dg").datagrid({
+				idFiled:'itemId',//主键字段
+				toolbar:'#toolbar',//绑定工具栏
+				fit:true,//填充容器
+				url:"../RatesController?method=findAll", //数据源路径,无法实现模糊查询所有打算增加参数 $("#itemName").val().toString()
+				dataType:"json",
+				nowrap:true,
+				striped: true,//斑马线
+				fitColumns:true,//自动填充列
+				//设置datagrid数据表格对象中的数据列
+				columns:[ [{
+					field:'itemId',//字段名
+					title:'项目编号',//datagrid数据表格中显示的列的标题
+					align:'center',//数据显示的位置:居中
+					width:'25%' //数据列的宽度
+				},{
+					field:'itemName',
+					title:'项目名称',
+					align:'center',
+					width:'25%'
+				},{
+					field:'itemDesc',
+					title:'规格型号',
+					align:'center',
+					width:'25%'
+				},{
+					field:'ratesMoney',
+					title:'金额',
+					align:'center',
+					width:'25%'
+				}] ],
+				//datagrid底部是否显示分页工具栏
+				pagination:true,
+				//底部分页工具栏中，页面记录数列表
+				pageList:[10,20,30,40],
+				//分页工具栏显示位置
+				pagePosition:'bottom',
+				//当前页面默认大小(每页显示多少行数据)
+				pageSize:10
+			});
+
+
+			//搜索层中的搜索按钮事件
+			$("#search").click(function(){
+				$("#dg").datagrid('load',"RatesController?method=findAll&"+$("#searchform").serialize());
+			});
+
+			//刷新按钮
+			$("#refresh").click(function(){
+				//添加成功后，把修改界面数据清空
+				$("#searchform").form("reset");
+				//datagrid数据表格重新加载
+				$("#dg").datagrid("reload","RatesController?method=findAll");
+			});
+
+		});
+		
+	</script>
+	</head>
+	<body style="width:100%;height:100%">
+		<table id="dg">
+					
+		</table>
+		<!-- 菜单操作工具栏 -->
+		<div id="toolbar">
+			<!-- 条件搜索层 -->
+			<form id="searchform" action="#" method="post" onsubmit="return false">
+				<table>
+					<tr>
+						<td>
+							项目名称：<input type="text" name="itemName" id="itemName" />
+						</td>
+						<td>
+							<a class="easyui-linkbutton" iconCls="icon-search" plain="false" id="search"><button type="submit" hidden>搜索</button></a>
+							<a class="easyui-linkbutton" iconCls="icon-reload" plain="true" id="refresh">刷新</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		
+		
+	</body>
+</html>

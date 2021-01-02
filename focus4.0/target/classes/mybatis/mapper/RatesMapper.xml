@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.RatesMapper">
+    <insert id="add">
+        insert into rates values(#{itemId},#{itemName},#{itemDesc},#{ratesMoney});
+    </insert>
+
+    <update id="update">
+        update rates set itemName=#{itemName},itemDesc=#{itemDesc},ratesMoney=#{ratesMoney} where itemId=#{itemId};
+    </update>
+
+    <delete id="delete">
+        delete from rates where itemId=#{itemId};
+    </delete>
+
+    <select id="selectByPage" resultType="com.xzjy.pojo.Rates">
+        select * from rates
+        <where>
+            <if test="itemName != null">
+                and itemName like "%"#{itemName}"%"
+            </if>
+        </where>
+        limit #{page},#{rows};
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from rates
+        <where>
+            <if test="itemName != null">
+                and itemName like "%"#{itemName}"%"
+            </if>
+        </where>
+    </select>
+    <select id="getMoneyByHouseType" resultType="com.xzjy.pojo.Rates">
+        select * from rates where itemName like "%"#{houseType}"%";
+    </select>
+</mapper>

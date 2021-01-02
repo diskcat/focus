@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.VisitorRegisterMapper">
+    <insert id="add">
+        INSERT INTO visitorRegister VALUES(#{visitorId},#{visitorName},#{visitorGender},#{visitorIdNum},#{visitorTelphone},
+        #{vistiAddress},#{vistiReason},#{cometime},#{leaveTime},#{empNo})
+    </insert>
+
+    <update id="update">
+        update visitorRegister set visitorName=#{visitorName},visitorGender=#{visitorGender},visitorIdNum=#{visitorIdNum},
+        visitorTelphone=#{visitorTelphone},vistiAddress=#{vistiAddress},vistiReason=#{vistiReason},cometime=#{cometime},
+        leaveTime=#{leaveTime},empNo=#{empNo} where visitorId=#{visitorId}
+    </update>
+
+    <delete id="delete">
+        delete from visitorRegister where visitorId=#{visitorId};
+    </delete>
+    <!--cometime,visitorName,vistiAddress-->
+    <select id="findAll" resultType="com.xzjy.pojo.VisitorRegister">
+        select * from visitorRegister
+        <where>
+            <if test="cometime!=null">
+                and cometime like  "%"#{cometime}"%"
+            </if>
+            <if test="visitorName!=null">
+                and visitorName like  "%"#{visitorName}"%"
+            </if>
+            <if test="vistiAddress!=null">
+                and vistiAddress like  "%"#{vistiAddress}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from visitorRegister
+        <where>
+            <if test="cometime!=null">
+                and cometime like  "%"#{cometime}"%"
+            </if>
+            <if test="visitorName!=null">
+                and visitorName like  "%"#{visitorName}"%"
+            </if>
+            <if test="vistiAddress!=null">
+                and vistiAddress like  "%"#{vistiAddress}"%"
+            </if>
+        </where>
+    </select>
+</mapper>

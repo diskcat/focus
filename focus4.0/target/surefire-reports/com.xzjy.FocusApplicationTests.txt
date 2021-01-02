@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.xzjy.FocusApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.079 s <<< FAILURE! - in com.xzjy.FocusApplicationTests
+test01  Time elapsed: 0.036 s  <<< ERROR!
+java.lang.NullPointerException
+	at com.xzjy.FocusApplicationTests.test01(FocusApplicationTests.java:33)
+

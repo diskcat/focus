@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.HouseInformationMapper">
+
+    <insert id="add">
+        insert into houseInformation values(#{houseId},#{ownerName},#{houseType},#{houseArea},#{houseNature},#{houseState},#{houseAddress});
+    </insert>
+    <update id="update">
+        update houseInformation set ownerName=#{ownerName},houseType=#{houseType},houseArea=#{houseArea},houseNature=#{houseNature},houseState=#{houseState},houseAddress=#{houseAddress} where houseId=#{houseId};
+    </update>
+    <delete id="delete">
+        delete from houseInformation where houseId=#{houseId};
+    </delete>
+
+    <select id="getHouseInformationByName" resultType="com.xzjy.pojo.HouseInformation">
+        select * from HouseInformation where houseId=#{uId};
+    </select>
+
+    <select id="findAll" resultType="com.xzjy.pojo.HouseInformation">
+        select * from houseInformation
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+            <if test="houseType!=null">
+                and houseType like "%"#{houseType}"%"
+            </if>
+            <if test="houseNature!=null">
+                and houseNature like "%"#{houseNature}"%"
+            </if>
+            <if test="houseState!=null">
+                and houseState like "%"#{houseState}"%"
+            </if>
+        </where>
+        limit #{page} , #{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from houseInformation
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+            <if test="houseType!=null">
+                and houseType like "%"#{houseType}"%"
+            </if>
+            <if test="houseNature!=null">
+                and houseNature like "%"#{houseNature}"%"
+            </if>
+            <if test="houseState!=null">
+                and houseState like "%"#{houseState}"%"
+            </if>
+        </where>
+    </select>
+</mapper>

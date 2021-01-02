@@ -1,0 +1,24 @@
+#关闭模板引擎缓存
+spring:
+  thymeleaf:
+    cache: false
+---
+#设置端口号
+server:
+  port: 8081
+---
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/focusdb?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+---
+mybatis:
+  type-aliases-package: com.xzjy.pojo
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+  #打印出mybatis的sql语句
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

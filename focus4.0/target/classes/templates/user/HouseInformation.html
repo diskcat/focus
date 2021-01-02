@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>房屋基本信息</title>
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+		<!-- 导入easyui相关的js库文件(函数) -->
+		<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="../easyui/datagrid-export.js"></script>
+		
+		<script type="text/javascript">
+		$(function(){
+			$.ajax({
+				type : "post",
+				url : "../HouseInformationController?method=findByName",
+				async : true,
+				data : "json",
+				dataType : "json",
+				success : function(houseInformation) {
+					$("#name").text(houseInformation.ownerName);
+					$("#houseId").text(houseInformation.houseId);
+					$("#houseType").text(houseInformation.houseType);
+					$("#area").text(houseInformation.houseArea);
+				}
+			});
+				
+		});
+	</script>
+	</head>
+	
+	<body style="width:99%;height:100%">
+		<h2 style="lign-height:100px;margin-left:30px">尊敬的<span id="name"></span>业主，您的房屋信息：</h2>
+		
+		<h3 style="lign-height:70px;margin-left:30px">房号:<span id="houseId"></span></h3>
+		<h3 style="lign-height:70px;margin-left:30px">户型:<span id="houseType"></span></h3>
+		<h3 style="lign-height:70px;margin-left:30px">面积:<span id="area"></span>m²</h3>			
+					
+	</body>
+</html>

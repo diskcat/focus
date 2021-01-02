@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>缴费清单</title>
+		<link rel="icon" href="../images/logo.ico" type="images/x-ico" />
+		<!-- 导入easyui样式 -->
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+		<!-- 导入easyui相关的js库文件(函数) -->
+		<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				$.ajax({
+					type:"post",
+					url: "../RecordController?method=findByName",
+					async: true,
+					dataType: "json",
+					success: function (data) {
+						//如果等于0就是没有数据
+						if(data.total==0){
+							$("#dg").append("欢迎新业主，您还没有缴纳任何的物业费！");
+						}else{
+							a();
+						}
+					}
+				})
+			});
+			function a() {
+				$("#dg").datagrid({
+					idFiled:'recordId',//主键字段
+					toolbar:'#toolbar',//绑定工具栏
+					fit:true,//填充容器
+					url:"../RecordController?method=findByName", //数据源路径
+					dataType:"json",
+					nowrap:true,
+					fitColumns:true,//自动填充列
+
+					//设置datagrid数据表格对象中的数据列
+					columns:[ [ {
+						field:'recordId',//字段名
+						title:'序号',//datagrid数据表格中显示的列的标题
+						align:'center',//数据显示的位置:居中
+						width:'16%' //数据列的宽度
+					},{
+						field:'houseId',
+						title:'房号',
+						align:'center',
+						width:'16%'
+					},{
+						field:'ownerTelphone',
+						title:'手机号码',
+						align:'center',
+						width:'16%'
+					},{
+						field:'recordType',
+						title:'交费类型',
+						align:'center',
+						width:'16%'
+					},{
+						field:'recordMoney',
+						title:'交费金额',
+						align:'center',
+						width:'16%'
+					},{
+						field:'recordDate',
+						title:'交费时间',
+						align:'center',
+						width:'16%'
+					}] ],
+					//datagrid底部是否显示分页工具栏
+					pagination:true,
+					//底部分页工具栏中，页面记录数列表
+					pageList:[10,20,30,40],
+					//分页工具栏显示位置
+					pagePosition:'bottom',
+					//当前页面默认大小(每页显示多少行数据)
+					pageSize:10
+				});
+			}
+		</script>
+	</head>
+	<body style="width: 100%; height: 100%;">
+		<!-- 显示数据的表格 -->
+		<table id="dg">
+	
+		</table>
+	</body>
+</html>

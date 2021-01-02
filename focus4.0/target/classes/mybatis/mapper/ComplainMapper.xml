@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.ComplainMapper">
+    <insert id="add">
+        insert into complain(houseId,comText,comTime,empName,comResult,comEndTime)
+        values(#{houseId},#{comText},#{comTime},#{empName},#{comResult},#{comEndTime});
+    </insert>
+
+    <delete id="deleteByIndex">
+        delete from complain
+        where comId = (select comId from complain where houseId=#{houseId} ORDER BY comTime DESC limit #{numb},1);
+    </delete>
+
+    <select id="findByName" resultType="com.xzjy.pojo.Complain">
+        select * from complain where houseId=#{houseId} ORDER BY comTime DESC;
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from complain where houseId=#{houseId};
+    </select>
+
+    <update id="update">
+        update complain set houseId=#{houseId},comText=#{comText},comTime=#{comTime},
+        empName=#{empName},comResult=#{comResult},comEndTime=#{comEndTime}  where comId=#{comId};
+    </update>
+
+    <delete id="delete">
+        delete from complain where comId=#{comId};
+    </delete>
+    <!--int num, int rows, String houseId, String comText, String comTime-->
+    <select id="findAll" resultType="com.xzjy.pojo.Complain">
+        select * from complain
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="comText!=null">
+                and comText like "%"#{comText}"%"
+            </if>
+            <if test="comTime!=null">
+                and comTime like "%"#{comTime}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from complain
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="comText!=null">
+                and comText like "%"#{comText}"%"
+            </if>
+            <if test="comTime!=null">
+                and comTime like "%"#{comTime}"%"
+            </if>
+        </where>
+    </select>
+
+</mapper>

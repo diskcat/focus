@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.OwnerInformationMapper">
+    <insert id="add">
+        insert into ownerInformation values(#{ownerId},#{houseId},#{ownerName},#{ownerSex},#{ownerIdcard},#{ownerTelphone},#{ownerEmail},#{ownerAddress});
+    </insert>
+    <update id="update">
+        update ownerInformation set houseId=#{houseId},ownerName=#{ownerName},ownerSex=#{ownerSex},
+        ownerIdcard=#{ownerIdcard},ownerTelphone=#{ownerTelphone},ownerEmail=#{ownerEmail},ownerAddress=#{ownerAddress}
+        where ownerId=#{ownerId};
+    </update>
+    <delete id="deleteByHouseId">
+        delete from ownerInformation where houseId = #{houseId};
+    </delete>
+    <delete id="deleteByOwnerId">
+        delete from ownerInformation where ownerId = #{ownerId};
+    </delete>
+    <select id="findAll" resultType="com.xzjy.pojo.OwnerInformation">
+        select * from ownerInformation
+        <where>
+            <if test="ownerId!=null">
+                and ownerId like "%"#{ownerId}"%"
+            </if>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from ownerInformation
+        <where>
+            <if test="ownerId!=null">
+                and ownerId like "%"#{ownerId}"%"
+            </if>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

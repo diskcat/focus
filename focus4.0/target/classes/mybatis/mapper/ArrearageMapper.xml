@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzjy.mapper.ArrearageMapper">
+    <insert id="add">
+        insert into arrearage(houseId,ownerName,ownerTelphone,state,arrearageMoney,arrearageDate)
+        values(#{houseId},#{ownerName},#{ownerTelphone},#{state},#{arrearageMoney},#{arrearageDate});
+    </insert>
+
+    <update id="update">
+        update arrearage set ownerName=#{ownerName},ownerTelphone=#{ownerTelphone},state=#{state},
+        arrearageMoney=#{arrearageMoney},arrearageDate=#{arrearageDate} where houseId=#{houseId}
+    </update>
+
+    <delete id="delete">
+        delete from arrearage where houseId=#{houseId};
+    </delete>
+
+
+    <select id="getArrearageByName" resultType="com.xzjy.pojo.Arrearage">
+        select * from arrearage where houseId=#{uId};
+    </select>
+
+    <select id="findAll" resultType="com.xzjy.pojo.Arrearage">
+        select * from arrearage
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+            <if test="state!=null">
+                and state like "%"#{state}"%"
+            </if>
+        </where>
+        limit #{num},#{rows};
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from arrearage
+        <where>
+            <if test="houseId!=null">
+                and houseId like "%"#{houseId}"%"
+            </if>
+            <if test="ownerName!=null">
+                and ownerName like "%"#{ownerName}"%"
+            </if>
+            <if test="state!=null">
+                and state like "%"#{state}"%"
+            </if>
+        </where>
+    </select>
+    <select id="getMoney" resultType="java.lang.Double">
+        select arrearageMoney from arrearage where houseId=#{houseId};
+    </select>
+
+    <select id="getAllArrearage" resultType="com.xzjy.pojo.Arrearage">
+        select * from arrearage;
+    </select>
+</mapper>

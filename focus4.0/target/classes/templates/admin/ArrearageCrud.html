@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>物业费欠费</title>
+	<!-- 导入easyui样式 -->
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" /> 
+	<!-- 导入easyui相关的js库文件(函数) -->
+	<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../easyui/datagrid-export.js"></script>
+	<!-- 自定义的样式 -->
+	<style type="text/css">
+		#mytable{
+			width:100%;
+			border-collapse:collapse;
+		}
+		#mytable td{
+			font-size:12px;
+		}
+		.tdalign{
+			text-align: right;
+			width:40%;
+		}
+		#smartart,#print{
+			float:right;
+			margin:15px 5px;
+		}
+	</style>
+	<!-- 脚本代码 -->
+	<script type="text/javascript">
+		$(function(){
+			/* 对表格对象加载datagrid方法 */
+			$("#dg").datagrid({
+				idFiled:'houseId',//主键字段
+				toolbar:'#toolbar',//绑定工具栏
+				fit:true,//填充容器
+				url:"../ArrearageController?method=findAll", //数据源路径
+				dataType:"json",
+				nowrap:true,
+				fitColumns:true,//自动填充列
+				rownumbers:true,//增加一个行号列
+				loadMsg:'正在玩命加载，请稍候....',//在页面显示数据之前，显示的文本
+				//冻结列：让某些列永远显示在页面中
+				frozenColumns:[ [{
+					'field':'checkbox',//复选框列
+					'checkbox':true
+				}] ],
+				//设置datagrid数据表格对象中的数据列
+				columns:[ [{
+					field:'houseId',//字段名
+					title:'房号',//datagrid数据表格中显示的列的标题
+					align:'center',//数据显示的位置:居中
+					width:'16%' //数据列的宽度
+				},{
+					field:'ownerName',
+					title:'业主姓名',
+					align:'center',
+					width:'16%'
+				},{
+					field:'ownerTelphone',
+					title:'手机号码',
+					align:'center',
+					width:'16%'
+				},{
+					field:'state',
+					title:'状态',
+					align:'center',
+					width:'16%'
+				},{
+					field:'arrearageMoney',
+					title:'欠费金额',
+					align:'center',
+					width:'16%'
+				},{
+					field:'arrearageDate',
+					title:'上次缴费时间',
+					align:'center',
+					width:'16%'
+				}] ],
+				//datagrid底部是否显示分页工具栏
+				pagination:true,
+				//底部分页工具栏中，页面记录数列表
+				pageList:[5,10,15,20],
+				//分页工具栏显示位置
+				pagePosition:'bottom',
+				//当前页面默认大小(每页显示多少行数据)
+				pageSize:5
+			});
+			//点击工具栏上"新增项目"按钮操作
+			$("#arrearageadd").click(function(){
+				$("#arrearageform").form("reset");
+				$("#ok").linkbutton({
+						text:"确定",
+						iconCls:"icon-add"
+					});
+				$("#arrearagedialog").dialog({
+						title:"新增房屋信息",
+						iconCls:"icon-add"
+					});
+				$("#arrearagedialog").dialog("open");
+			});
+			
+			//新增/修改对话框中的"确定"按钮操作
+			$("#ok").click(function(){
+				//获得按钮上的文字，确定它是增加还是修改
+				var btnText=$(this).text();
+				//判断它是“确定”还是"修改"按钮
+				if(btnText.trim()=="确定"){ //新增
+					//判断用户输入的数据是否通过验证
+					if($("#arrearageform").form("validate")){
+						//使用ajax方式提交数据到控制层
+						$.ajax({
+							type:"post",
+							url:"../ArrearageController",
+							async:true,
+							data:$("#arrearageform").serialize()+"&method=add",//表单数据序列化
+							dataType:"text",
+							success:function(message){
+								//判断服务器端返回的文本内容
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"欠费信息添加成功!"
+									});
+									//添加成功后，把添加界面数据清空
+									$("#arrearageform").form("reset");
+									//把对话框关闭
+									$("#arrearagedialog").dialog("close");
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"欠费信息添加失败!"
+									});
+								}
+							}
+						});
+					}else{
+						//右下角显示一个信息提示
+						$.messager.show({
+							title:"提示",
+							msg:"数据验证没有通过，不能保存项目信息..."
+						});
+					}
+				}else if(btnText.trim()=="修改"){ //修改操作
+					//对数据进行修改
+					//判断表单数据是否通过验证
+					if($("#arrearageform").form("validate")){
+						//$.post(url,data,callback,type)
+						$.post("../ArrearageController?method=update",
+						$("#arrearageform").serialize(),
+						function(message){
+							//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+							if(message=="success"){
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"欠费信息修改成功!"
+								});
+								//添加成功后，把修改界面数据清空
+								$("#arrearageform").form("reset");
+								//把对话框关闭
+								$("#arrearagedialog").dialog("close");
+								//datagrid数据表格重新加载
+								$("#dg").datagrid("reload");
+							}else{
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"欠费信息修改失败!"
+								});
+							}
+						},
+						"text");
+					}				
+				}else if(btnText.trim()=="缴费"){
+					//判断表单数据是否通过验证
+					if($("#arrearageform").form("validate")){
+						//$.post(url,data,callback,type)
+						$.post("../ArrearageController?method=jiaofei",
+						$("#arrearageform").serialize(),
+						function(message){
+							//判断服务器端返回的字符串内容:修改成功success,修改失败failure
+							if(message=="success"){
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"缴费成功!"
+								});
+								//添加成功后，把修改界面数据清空
+								$("#arrearageform").form("reset");
+								//把对话框关闭
+								$("#arrearagedialog").dialog("close");
+								//datagrid数据表格重新加载
+								$("#dg").datagrid("reload");
+							}else{
+								//右下角显示一个信息提示
+								$.messager.show({
+									title:"提示",
+									msg:"缴费失败!"
+								});
+							}
+						},
+						"text");
+					}
+				}
+			});
+			
+			//点击工具栏上的修改项目
+			$("#arrearageupdate").click(function(){
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行数据进行修改...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#arrearagedialog").dialog({
+						title:"修改房屋信息",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#arrearagedialog").dialog("open");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#arrearageform").form("load",{
+						houseId:array[0].houseId,
+						ownerName:array[0].ownerName,
+						ownerTelphone:array[0].ownerTelphone,
+						state:array[0].state,
+						arrearageMoney:array[0].arrearageMoney,
+						arrearageDate:array[0].arrearageDate
+					});
+					//设置表单按钮上的文字
+					$("#ok").linkbutton({
+						text:"修改",
+						iconCls:"icon-edit"
+					});
+				}
+			});
+			
+			//点击缴费按钮
+			$("#jiaofei").click(function(){
+				//获取datagrid中选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的数据行是否为多行或未选择数据行
+				if(array.length==0 || array.length>1){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择一行进行缴费...."
+					});
+				}else{
+					//客户正确选择了一行数据
+					//打开增加对话框，修改对话框的标题及图标，按钮文字
+					$("#arrearagedialog").dialog({
+						title:"缴费信息",
+						iconCls:"icon-edit"
+					});
+					
+					//打开对话框
+					$("#arrearagedialog").dialog("open");
+					//把要修改的数据行（array[0]行）加载到修改表单中。
+					$("#arrearageform").form("load",{
+						houseId:array[0].houseId,
+						ownerName:array[0].ownerName,
+						ownerTelphone:array[0].ownerTelphone,
+						state:array[0].state,
+						arrearageMoney:array[0].arrearageMoney,
+						arrearageDate:array[0].arrearageDate
+					});
+					if(array[0].arrearageMoney==0){
+						//禁用按钮
+						$("#ok").linkbutton('disable');
+					}else{
+
+						//设置表单按钮上的文字
+						$("#ok").linkbutton({
+							text:"缴费",
+							iconCls:"icon-edit"
+						});
+					}
+				}
+				
+			});
+
+			//计算欠费金额
+			$("#qianfei").click(function () {
+				$.ajax({
+					type:"post",
+					url:"../ArrearageController?method=qianfei",
+					dateType : "json",
+					success : function (message) {
+						if (message=="success"){
+							$.messager.show({
+								title:"提示",
+								msg:"自动计算欠费金额成功!"
+							});
+							$("#dg").datagrid("reload","/ArrearageController?method=findAll");
+						}else{
+							$.messager.show({
+								title:"提示",
+								msg:"计算失败!"
+							});
+						}
+					}
+				})
+			});
+
+			//点击工具栏上的删除项目
+			$("#arrearagedelete").click(function(){
+				//获取datagrid中的选择的数据行
+				var array=$("#dg").datagrid("getSelections");
+				//判断选择的行数是否为0
+				if(array.length==0){
+					//弹出提示信息
+					$.messager.show({
+						title:"提示信息",
+						msg:"请选择至少一行数据进行删除...."
+					});
+				}else{
+					//由于删除的行数会多于1行，将多个删除的项目编号进行拼接（以,逗号分隔）方式传递到服务器端，
+					//服务器端再使用循环调用删除方式进行删除。
+					$.messager.confirm("确认","您真的想要删除欠费信息吗?",function(rows){
+						if(rows){
+							//拼接编号字符串
+							var houseIdStr="";
+							//使用循环拼接
+							for(var i=0;i<array.length;i++){
+								houseIdStr=houseIdStr+array[i].houseId+",";
+							}
+							//将最后一个","去掉
+							houseIdStr=houseIdStr.substring(0,houseIdStr.length-1);
+							//使用ajax调用后台的处理代码删除数据
+							$.post("../ArrearageController?method=delete",
+							{'houseIdStr':houseIdStr},function(message){
+								//判断删除是否成功:
+								if(message=="success"){
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"欠费信息成功删除!"
+									});
+									
+									//datagrid数据表格重新加载
+									$("#dg").datagrid("reload");
+								}else{
+									//右下角显示一个信息提示
+									$.messager.show({
+										title:"提示",
+										msg:"欠费信息删除失败!"
+									});
+								}
+							},"text");
+						}
+					});
+				}
+			});
+
+			//搜索层中的搜索按钮事件
+			$("#search").click(function () {
+				$("#dg").datagrid('load',"/ArrearageController?method=findAll&"+$("#searchform").serialize());
+			})
+
+			//刷新按钮
+			$("#refresh").click(function(){
+				//添加成功后，把修改界面数据清空
+				$("#searchform").form("reset");
+				//datagrid数据表格重新加载
+				$("#dg").datagrid("reload","/ArrearageController?method=findAll");
+			});
+			
+			//取消按钮的点击事件
+			$("#cancel").click(function(){
+				//添加成功后，把修改界面数据清空
+				$("#complainform").form("reset");
+				//把对话框关闭
+				$("#complaindialog").dialog("close");
+			});
+			
+			//导出按钮点击事件
+			$("#smartart").click(function(){
+				// export to excel导出表格
+			    $('#dg').datagrid('toExcel', 'datagrid.xls');
+			});
+			//打印按钮的点击事件
+			$("#print").click(function(){
+		    	//打印表格
+		    	$('#dg').datagrid('print','DataGrid');	
+			});
+		});
+		
+	</script>
+	</head>
+	<body style="width:100%;height:100%">
+		<table id="dg">
+					
+		</table>
+		<!-- 菜单操作工具栏 -->
+		<div id="toolbar">
+			<!-- 新增项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-add" plain="true" id="arrearageadd">新增欠费信息</a>
+			<!-- 修改项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="arrearageupdate">修改欠费信息</a>
+			<!-- 缴费 -->
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="jiaofei">缴费</a>
+			<!-- 计算欠费金额 -->
+			<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="qianfei">自动计算欠费金额</a>
+			<!-- 打印 -->
+			<a class="easyui-linkbutton" iconCls="icon-print" plain="true" id="print">打印</a>
+			<!-- 导出Excel -->
+			<a class="easyui-linkbutton" iconCls="icon-large-smartart" plain="true" id="smartart">导出</a>
+			<!-- 删除项目 -->
+			<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="arrearagedelete">删除欠费信息</a>
+			<form id="searchform" action="#" method="post">
+				<table>
+					<tr>
+						<td>
+							房号：<input type="text" name="houseId" />
+						</td>
+						<td>
+							业主姓名：<input type="text" name="ownerName" />
+						</td>
+						<td>
+							状态：<input type="text" name="state" />
+						</td>
+						<td>
+							<a class="easyui-linkbutton" iconCls="icon-search" plain="false" id="search">搜索</a>
+							<a class="easyui-linkbutton" iconCls="icon-reload" plain="false" id="refresh">刷新</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		
+		<!-- 新增/修改项目对话框 -->
+		<div id="arrearagedialog" class="easyui-dialog" title="新增欠费信息" style="width:400px;height:300px;"
+			 data-options="iconCls:'icon-add',resizable:false,modal:true" closed="true">
+			<form id="arrearageform">
+				<!-- 采用表格布局  -->
+				<table id="mytable">
+					<tr>
+						<td class="tdalign">房号:</td>
+						<td><input type="text" name="houseId" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入房屋编号'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">业主姓名:</td>
+						<td><input type="text" name="ownerName" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入业主姓名'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">业主手机号:</td>
+						<td><input type="text" name="ownerTelphone" class="easyui-validatebox" data-options="required:true,missingMessage:'请输入业主手机号'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">状态:</td>
+						<td><select name="state" class="easyui-combobox" data-options="editable:false,required:true">
+							  <option value="">--请选择状态--</option>
+							  <option value="已交清">已交清</option>
+							  <option value="欠费">欠费</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="tdalign">欠费金额:</td>
+						<td><input type="text" name="arrearageMoney" class="easyui-numberbox" data-options="min:0,precision:2,required:true,missingMessage:'请输入欠费金额'"></td>
+					</tr>
+					<tr>
+						<td class="tdalign">上次缴费时间:</td>
+						<td><input type="text" name="arrearageDate" class="easyui-datetimebox" data-options="required:true,missingMessage:'请输入上次缴费时间'"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<a id="ok" class="easyui-linkbutton" data-options="iconCls:'icon-add'">确定</a>
+							<a id="cancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'">取消</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</body>
+</html>

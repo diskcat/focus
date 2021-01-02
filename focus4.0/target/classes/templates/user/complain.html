@@ -1,0 +1,215 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>投诉</title>
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" />
+		<!-- 导入easyui相关的js库文件(函数) -->
+		<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+
+		<script  th:inline="javascript">
+		$(function(){
+			f();
+		});
+		$("#fdmg").click(function () {
+			f();
+		})
+		function f() {
+			$.ajax({
+				type : "post",
+				url : "../ComplainController?method=findByName",
+				async : true,
+				data : "json",
+				dataType : "json",
+				success : function(data) {
+					if(data.total==0){
+						$("#test01").html("您没有进行任何投诉!");
+						$("#test02").hide();
+						$("#test03").hide();
+						$("#pre").hide();
+						$("#next").hide();
+						$("#tot").hide();
+						$("#remove").hide();
+						var uname = [[${session.user.getUName()}]];
+						$("#name").text(uname.toString());//getUName
+					}else{
+						var j=0;
+						rec(j);
+						function rec(i){
+							$("#name").text(data.rows[i].ownerName);
+							$("#compcontent").text(data.rows[i].comText);
+							$("#cur").text(i+1);
+							$("#tot").text(data.total);
+							var statue=data.rows[i].comResult;
+							if(statue=="已处理"){
+								$("#result").text("您的投诉已处理完成，祝您生活愉快！");
+							}else if(statue=="处理中"){
+								$("#result").text("您的投诉持续跟进中，请您耐心等待！")
+							}else if(statue=="未处理"){
+								$("#result").text("已受理您的投诉，请您耐心等待！")
+							}else if(statue=="无效投诉"){
+								$("#result").text("很抱歉，您的投诉属于无效投诉！")
+							}
+						}
+						$("#pre").click(function(){
+							if(j>0){
+								rec(--j);
+							}
+						});
+						$("#next").click(function(){
+							if(j<data.total-1){
+								rec(++j);
+							}
+						});
+						$("#remove").click(function () {
+							$.ajax({
+								type: "post",
+								url: "/ComplainController?method=deleteByIndex&numb="+j,
+								async : true,
+								data : "json",
+								success: function () {
+									window.location.reload();
+								}
+							})
+						});
+					}
+				}
+			});
+		}
+	</script>
+
+	 <script type="text/javascript">
+	    window.onload = function(){
+	    var myTab = document.getElementById("tab");    
+	    var myUl = myTab.getElementsByTagName("ul")[0];
+	    var myLi = myUl.getElementsByTagName("li");    
+	    var myDiv = myTab.getElementsByTagName("div"); 
+	
+	    for(var i = 0; i<myLi.length;i++){
+	        myLi[i].index = i;
+	        myLi[i].onclick = function(){
+	            for(var j = 0; j < myLi.length; j++){
+	                myLi[j].className="off";
+	                myDiv[j].className = "hide";
+	            }
+	            this.className = "on";
+	            myDiv[this.index].className = "show";
+	        }
+	      }
+	    }
+    </script>
+	<style type="text/css">
+	     *{
+		     padding:0px; 
+		     margin:0px;
+	     }
+	       #tab{
+		       width:95%; 
+		       padding:5px;
+		       height:90%;
+		       margin:10px;
+	       }
+	       #tab ul{
+		       list-style:none; 
+		       display:;
+		       height:30px;
+		       line-height:30px; 
+		       border-bottom:2px #C88 solid;
+		       
+	       }
+	       #tab ul li{
+		       background:#FFF;
+		       cursor:pointer;
+		       float:left;
+		       list-style:none; 
+		       height:29px; 
+		       line-height:29px;
+		       padding:0px 10px; 
+		       margin:0px 10px;  
+		       border:1px solid #BBB; 
+		       border-bottom:2px solid #C88;
+		       
+	       }
+	       #tab ul li.on{
+		       border-top:2px solid Saddlebrown; 
+		       border-bottom:2px solid #FFF;
+	       }
+	       #tab div{
+		       height:300px;
+		       width:100%; 
+		       line-height:24px; 
+		       padding:1px; 
+		       border-top:none;   
+		       border:1px solid #336699;
+		      
+	       }
+	       .hide{
+	       	   display:none;
+	       }
+	</style>
+	<script type="text/javascript">
+		$(function () {
+			$("#tijiao").click(function(){
+				if($("#comtext").val()==""){
+					$.messager.show({
+						title:'温馨提示',
+						width:200,
+						height:100,
+						timeout:0,
+						msg:'投诉的内容不能为空！'
+					});
+					return false;
+				}else{
+					$.ajax({
+						type : "post",
+						url : "../ComplainController?method=tousu",
+						async : true,
+						data : $("#form").serialize(),
+						dataType : "json" ,
+						success : function(data) {
+							$.messager.show({
+								title:'温馨提示',
+								width:200,
+								height:100,
+								timeout:0,
+								msg:'投诉成功！'
+							});
+							$("#res").click();
+							//刷新页面
+							setTimeout(function(){window.location.reload();},2000);
+						}
+					});
+				}
+			});
+		})
+	</script>
+	</head>
+	<body>
+		<div id = "tab">
+	        <ul>
+		        <li class="off"><input id="sbmt" type="button"  value="我要投诉"></li>
+		        <li class="on" id="myComplaint"><input id="fdmg" type="button" value="我的投诉"></li>
+	        </ul>
+		    <div id="firstPage" class="hide">
+		        <form id="form" onsubmit="return false">
+					投诉内容(限100个汉字)：<br><input name="comText" id="comtext" type="text" style="width:99%;height: 200px;" required/>
+					<input id="tijiao" type="submit" value="提交" style="margin:10px">
+					<input type="reset" value="取消" id="res" style="margin:10px">
+				</form>    
+		    </div>
+		    <div id="secondPage" class="on">
+		        <h2 style="line-height:90px ;margin-left:30px;">尊敬的[[${session.user.getUName()}]]业主：</h2>
+				<h3 style="line-height:50px ;margin-left:30px;" id="test01">投诉内容：<span id="compcontent"></span></h3>
+				<h3 style="line-height:50px ;margin-left:30px;" id="test02">状态：<span id="result"></span></h3>
+				<div style="border:none;margin-left: 24px;margin-top: 52px;">
+					<button id="pre">上一页</button>&nbsp;&nbsp;<button id="next">下一页</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="test03">当前第<span id="cur"></span>页，共<span id="tot"></span>页</span>
+					<button style="width:80px;height:30px;margin-left:120px;" id="remove">删除投诉</button>
+				</div>
+			</div>
+		</div>
+			
+	</body>
+</html>

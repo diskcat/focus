@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>业主服务</title>
+		<link rel="icon" href="../images/logo.ico" type="images/x-ico" />
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css" /> 
+		<!--字体图标库-->
+		<link rel="stylesheet" href="../font-awesome/css/font-awesome.min.css">
+		<!-- 导入easyui相关的js库文件(函数) -->
+		<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../easyui/locale/easyui-lang-zh_CN.js"></script>
+		<style type="text/css">
+			/*清除元素默认的内边距和外边距*/
+			*{                                
+			  margin:0px;
+			  padding:0px;
+			}
+			/*清除所有a标签的格式*/
+			a{                                
+			  text-decoration:none;
+			  color:rgb(0,0,0);
+			}
+			ul li:hover{
+				cursor: pointer;
+			}
+			header{
+				height:30px; 
+				background-color: rgba(0,0,0,.6);
+			}
+			.ul-left{
+				list-style: none;
+				margin-left : 120px;
+				font-size: 12px;
+			}
+			#app-picture{	
+				display: none;
+				position: absolute;
+				top: 30px;
+				left:120px;
+				z-index: 99;
+			}
+			#app:hover +#app-picture{
+				display: block;
+			}
+			.ul-left li{
+				float:left;
+				margin:0px 5px;
+			}
+			.ul-left li a{
+				color: rgb(255,255,255);
+				line-height: 30px;
+			}
+			.ul-right{
+				list-style: none;
+				margin-right: 120px;
+				float: right;
+				font-size: 12px;
+			}
+			#owner{
+        		font-weight:bold;
+        		margin:0px 5px;
+        	}
+			.ul-right li{
+				float: left;
+				margin:0px 5px;
+			}
+			.ul-right li a{
+				color: rgb(255,255,255);
+				line-height: 30px;
+			}
+			.li-header:hover {
+				color: rgb(0,151,233);
+			}
+			
+			#nav-top{
+				height: 100px; 
+				background-color: aliceblue;
+			}
+			#nav-top img{
+				margin :20px 0px 20px 120px;
+			}
+			#nav-top ul{
+				list-style: none;
+				float: right; 
+				margin-right: 100px;
+				font-weight: bold;
+			}
+			#nav-top ul li{
+				float: left;
+				margin:40px 20px;
+			}
+			#nav-top li a:hover{
+				color: rgb(0,151,233);
+			}
+			
+			#nav-right{
+				margin: 50px 120px;
+				background-color: aliceblue;
+				width: 240px;
+				border-radius: 20px;
+			}
+			#nav-right li{
+				list-style: none;
+				line-height: 50px;
+				height: 50px;
+			}
+			#nav-right li:hover{
+				background-color:rgb(0,151,233);
+				color: rgb(255,255,255);
+			}
+			#nav-right .fa{
+				width: 50px;
+				text-align: center;
+				margin:0 30px ;
+			}
+			
+			#tab{
+				float: right;
+				width: 830px;
+				height: 400px;
+				margin-top: -450px;
+				margin-right: 110px;
+			}
+			
+			footer{
+        		font-size: 14px;
+        		background: #dddddd;
+        		width:100%;
+        		height:90px;
+        		margin-top: 20px;
+        		text-align: center;
+        		padding-top: 20px;
+        	}
+        	footer a:hover{
+        		color:#669900;
+        	}
+        	
+		</style>
+		
+	    <script type="text/javascript">
+			/*选项卡*/
+			$(function() {
+			
+				$(".opt").click(function() {
+					var title = $(this).text();
+					var url = $(this).attr("url");
+					var isExt = $('#opt_tabs').tabs('exists', title);
+					//判断页签是否已经存在 选项卡,如果不存在则新建选选项卡；存在则显示该选项卡
+					if (!isExt) {
+						$('#opt_tabs').tabs('add', {
+						title : title,
+						width : $("#opt_tabs").parent().width(),
+						height : "auto",
+						content : createContent(url),
+						closable : true
+					});
+					}else{
+						$('#opt_tabs').tabs('select', title);
+						return;
+					}					
+				});
+				
+			});
+			
+			function createContent(url) {
+				var strPath = '<iframe src="' + url + '" scrolling="no" frameborder="0" width="100%" height="100%"></iframe>';
+				return strPath;
+			}
+		</script>
+		<script type="text/javascript">	
+	        $(function(){
+	            var tabs = $('#opt_tabs').tabs().tabs('tabs');
+	            for(var i=0; i<tabs.length; i++){
+	                tabs[i].panel('options').tab.unbind().bind('mouseenter',{index:i},function(e){
+	                    $('#opt_tabs').tabs('select', e.data.index);
+	                });
+	            }
+	        });
+		</script>
+	    
+	</head>
+	<body>
+		<header>			
+			<ul class="ul-left">
+				<div id="app-picture"><img src="../images/app.jpg" /></div>
+				
+			</ul>
+			<ul class="ul-right" >
+				<li ><a href="" ><i class="fa fa-user-o" aria-hidden="true"></i> 尊敬的<span id="owner" >[[${session.user.getUName()}]]</span>欢迎您回家！</a></li>
+				<li ><a href="">|</a></li>
+				<li ><a class="li-header" href="/userLogout" >退出登录</a></li>
+			</ul>			
+		</header>
+		<div>
+			<div id="nav-top" >
+				<img src="../images/LOGO.png" title="logo" alt="logo"/>
+				<ul >
+					<li ><a href="../index.html">首页</a></li>
+				</ul>
+			</div>
+			<nav id="nav-right">
+				<ul>
+					<li class="opt"  url="/user/Regulatory"><i class="fa fa-volume-down fa-2x" aria-hidden="true"></i>小区公告</li>
+					<li class="opt"  url="/user/HouseInformation"><i class="fa fa-home fa-2x" aria-hidden="true"></i>房屋信息</li>
+					<li class="opt"  url="/user/showMoney"><i class="fa fa-jpy fa-2x" aria-hidden="true"></i>缴费提醒</li>
+					<li class="opt"  url="/user/feeList"><i class="fa fa-database fa-2x" aria-hidden="true"></i>缴费详情</li>
+					<li class="opt"  url="/user/information"><i class="fa fa-phone fa-2x" aria-hidden="true"></i>联系管理</li>
+					<li class="opt"  url="/user/complain"><i class="fa fa-envelope fa-2x" aria-hidden="true"></i>投诉建议</li>
+					<li class="opt"  url="/user/Rates"><i class="fa fa-file-code-o fa-2x" aria-hidden="true"></i>收费标准</li>
+				</ul>
+			</nav>
+		
+
+	    	<div id="tab" data-options="region:'center',title:'数据管理'" style="background-image:url('../images/focus_001.jpg');background-size: 100% 100%">
+		    	<!--选项卡 -->
+		    	<div class="easyui-tabs" id="opt_tabs" data-options="fit:true,border:false,pill:true,border:true" >
+	    		
+	    	</div>
+	    </div>	
+			
+		</div>
+		<footer>
+			<p>香樟物业管理有限公司版权所有</p>
+		</footer>
+	</body>
+</html>

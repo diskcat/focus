@@ -1,0 +1,137 @@
+			/*将页面内所有边距设为0*/
+			*{
+				padding: 0;
+				margin: 0;
+			}
+			a{
+				text-decoration: none;
+				color:#000000;
+			}
+			/*logo图片*/
+			.logo{
+				margin-left:18%;
+				float:left;
+				margin-top: -30px;
+			}
+	        #menu {
+	            width: 40%;
+	            height: 35px;
+	            margin: 50px 35%;
+	        }
+	        ul {
+	            list-style: none;
+	        }
+	        ul li {
+	            float: left;
+	            line-height: 40px;
+	            text-align: center;
+	            position: relative;
+	            margin-left: 30px;;
+	        }
+	        #menubarto ul li a:hover{
+	        	color:#669900;
+	        }
+	        #menubarto ul li ul li a:hover{
+	        	color:white;
+	        }
+	        #menubarto a {
+	            color: #000;
+	            display: block;
+	            width: 90px;
+	            font-size: 14px;
+	            font-weight: 700;
+	        }
+	        ul li ul li {
+	            float: none;
+	            border-left: none;
+	            margin-left: auto;
+	            background:#eee;
+	        }
+	 		ul li ul li:hover{
+	 			background:#ff8000;
+	 		}
+	        ul li ul {
+	            display: none;
+	            width: 90px;
+	            position: absolute;
+	        }
+	        ul li:hover ul {
+	            display: block;
+        	}
+        	.menubar{
+        		height:50px;
+        	}
+        	.images{
+        		text-align: center;
+        	}
+        	.content{
+        		width:74%;
+        		margin-left: 13%;
+        		height:300px;
+        		border-bottom:1px solid;
+        	}
+        	.content_left{
+        		width:25%;
+        		font-size: 13px;
+        		float: left;
+        	}
+        	.content_left span{
+        		line-height: 30px;
+        	}
+        	.content_middle{
+        		width:40%;
+        		font-size: 13px;
+        		float: left;
+        		margin-left: 5%;
+        	}
+        	.content_right{
+        		width:25%;
+        		font-size: 13px;
+        		float: left;
+        		margin-left: 5%;
+        	}
+        	.content_right p{
+        		line-height: 20px;
+        	}
+        	.content_right div{
+        		float: left;
+        		width:172px;
+        	}
+        	h6{
+        		margin-top: 20px;
+        		margin-bottom: 5px;
+        		border-bottom: 1px solid #848484;
+        		padding-bottom: 5px;
+        	}
+        	p a{
+        		
+	            color: #000;
+	            line-height: 30px;
+        	}
+        	.content_middle p:hover{
+        		background:#b2b2b2;
+        	}
+        	.showimg{
+        		margin-left: 12.5%;
+        		margin-top: 20px;
+        	}
+        	h4{
+        		margin-bottom: 10px;
+        	}
+        	.showimg img{
+        		width:200px;
+        		height:200px;
+        		
+        	}
+        	.copyright{
+        		font-size: 14px;
+        		background: #dddddd;
+        		width:100%;
+        		height:70px;
+        		margin-top: 20px;
+        		text-align: center;
+        		padding-top: 20px;
+        	}
+        	.copyright a:hover{
+        		color:#669900;
+        	}
