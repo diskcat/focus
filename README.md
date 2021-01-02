@@ -2,7 +2,7 @@
 
 <h4>数据库：Mysql</h4>
 <h4>前段：JQuery+Css+HTML+EasyUI</h4>
-<h4>后端: SpringBoot+Mybatis+Thymeleaf+Durid+Alipay</h4>
+<h4>后端: SpringBoot+Mybatis+Thymeleaf+Durid+Alipay+Shiro</h4>
 
 
 <h4>前台功能简介：</h4>
